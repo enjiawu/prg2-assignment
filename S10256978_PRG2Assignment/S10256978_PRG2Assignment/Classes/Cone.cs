@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace S10256978_PRG2Assignment
+namespace S10256978_PRG2Assignment.Classes
 {
-    internal class Cup
+    internal class Cone
     {
     }
 }
