@@ -8,5 +8,12 @@ namespace S10256978_PRG2Assignment.Classes
 {
     internal class Order
     {
+        //Declaring properties 
+
+
+        //Constructors
+
+        //Methods
+
     }
 }
