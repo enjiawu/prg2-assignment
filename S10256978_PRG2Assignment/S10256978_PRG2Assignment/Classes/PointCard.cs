@@ -37,7 +37,10 @@ namespace S10256978_PRG2Assignment.Classes
         }
         public void RedeemPoints(int p)
         {
-            Points -= p;
+            if (Points >= p && (Tier == "Silver" || Tier == "Gold"))
+            {
+                Points -= p;
+            }
         }
         public void Punch()
         {

@@ -14,7 +14,7 @@ namespace S10256978_PRG2Assignment.Classes
         public DateTime Dob {  get; set; }
         public Order CurrentOrder { get; set; }
         public List<Order> OrderHistory { get; set; } = new List<Order>();
-        public PointCard Rewards { get; set; }
+        public PointCard Rewards { get; set; } //do i need to use this anywhere in the class??
 
         //Constructors
         public Customer() { }
@@ -26,9 +26,12 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         //Methods
-        public Order MakeOrder()
+        public Order MakeOrder() //not sure if correct
         {
-            return Order(MemberId, DateTime.Now);
+            CurrentOrder = new Order(MemberId, DateTime.Now);
+            OrderHistory.Add(CurrentOrder);
+
+            return CurrentOrder;
         }
         public bool IsBirthday()
         {
