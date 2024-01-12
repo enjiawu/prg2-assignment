@@ -1,2 +1,2 @@
-# prg2-assignment
-PRG 2 Assignment 2024
+# PRG 2 Assignment 2024
+
