@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace S10256978_PRG2Assignment.Classes
 {
-    internal class Cone
+    internal class Cone : IceCream
     {
         // Properties
         public bool Dipped { get; set; }
@@ -22,12 +22,39 @@ namespace S10256978_PRG2Assignment.Classes
         public override double CalculatePrice()
         {
             // Cone Calculation
-            return base.CalculatePrice();
+            double scoopPrice;
+
+            if (Scoops == 1)
+            {
+                scoopPrice = 5.00;
+            }
+            else if (Scoops == 2)
+            {
+                scoopPrice = 5.50;
+            }
+            else if (Scoops == 3)
+            {
+                scoopPrice = 6.50;
+            }
+            else
+            {
+                scoopPrice = 0.00;
+                Console.WriteLine("Warning: Invalid number of scoops. Please enter number 1 to 3.");
+            }
+
+            double price = scoopPrice + Flavours.Count * 2.00 + Toppings.Count * 1.00;
+
+            if (Dipped) 
+            {
+                price += 2.00;
+            }
+
+            return price;
         }
 
         public override string ToString()
         {
-            return base.ToString();
+            return $"{base.ToString()}\tPrice: {CalculatePrice()}";
         }
     }
 }
