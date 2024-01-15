@@ -26,15 +26,11 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         // Methods
-        public virtual double CalculatePrice()
-        {
-            double price = 0;
-            return price;
-        }
+        public abstract double CalculatePrice();
 
         public override string ToString()
         {
-            return $"Option: {Option}, Scoops: {Scoops}, Flavours: {string.Join(", ", Flavours)}, Toppings: {string.Join(", ", Toppings)}";
+            return $"Option: {Option}\tScoops: {Scoops}\tFlavours: {string.Join(", ", Flavours)}\tToppings: {string.Join(", ", Toppings)}";
         }
     }
 }
