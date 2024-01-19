@@ -14,7 +14,7 @@ namespace S10256978_PRG2Assignment.Classes
         public DateTime Dob {  get; set; }
         public Order CurrentOrder { get; set; }
         public List<Order> OrderHistory { get; set; } = new List<Order>();
-        public PointCard Rewards { get; set; } //do i need to use this anywhere in the class??
+        public PointCard Rewards { get; set; } 
 
         //Constructors
         public Customer() { }
@@ -26,16 +26,15 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         //Methods
-        public Order MakeOrder() //not sure if correct
+        public Order MakeOrder() 
         {
-            CurrentOrder = new Order(MemberId, DateTime.Now);
-            OrderHistory.Add(CurrentOrder);
-
+            CurrentOrder = new Order(MemberId, DateTime.Now); //Make new order
+            OrderHistory.Add(CurrentOrder); //Add into order history
             return CurrentOrder;
         }
         public bool IsBirthday()
         {
-            if (Dob == DateTime.Now)
+            if (Dob == DateTime.Now) //Check if today is birthday
             {
                 return true;
             }
@@ -49,7 +48,7 @@ namespace S10256978_PRG2Assignment.Classes
             {
                 history += order + " ";
             }
-            return $"Name: {Name}\tMemberID: {MemberId}\tDOB: {Dob}\tCurrentOrder: {CurrentOrder}\tOrderHistory: {history}\tRewards: {Rewards}";
+            return $"Name: {Name}\tMemberID: {MemberId}\tDOB: {Dob.ToString("dd/MM/yyyy")}\tCurrentOrder: {CurrentOrder}\tOrderHistory: {history}\tRewards: {Rewards}";
         }
     }
 }

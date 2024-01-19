@@ -39,7 +39,7 @@ namespace S10256978_PRG2Assignment.Classes
             else
             {
                 scoopPrice = 0.00;
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter number 1 to 3.");
+                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number fromm  1 to 3.");
             }
 
             double price = scoopPrice + Flavours.Count * 2.00 + Toppings.Count * 1.00;

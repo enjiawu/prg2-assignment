@@ -22,11 +22,11 @@ namespace S10256978_PRG2Assignment.Classes
         public override double CalculatePrice()
         {
             // Cone Calculation
-            double scoopPrice;
+            double scoopPrice; //where are u gonna implement the premium flavours price?
 
             if (Scoops == 1)
             {
-                scoopPrice = 5.00;
+                scoopPrice = 4.00; //shouldnt it be $4?
             }
             else if (Scoops == 2)
             {
@@ -39,7 +39,7 @@ namespace S10256978_PRG2Assignment.Classes
             else
             {
                 scoopPrice = 0.00;
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter number 1 to 3.");
+                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from 1 to 3.");
             }
 
             double price = scoopPrice + Flavours.Count * 2.00 + Toppings.Count * 1.00;

@@ -11,7 +11,7 @@ namespace S10256978_PRG2Assignment.Classes
         //Declaring properties 
         public int Id { get; set; }
         public DateTime TimeReceived { get; set; }
-        public DateTime? TimeFulfilled { get; set; } //how to find timefulfiled??
+        public DateTime? TimeFulfilled { get; set; } 
         public List<IceCream> IceCreamList { get; set; } = new List<IceCream>();
 
         //Constructors
@@ -23,7 +23,7 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         //Methods
-        public void ModifyIceCream(int i) //what to add inside??
+        public void ModifyIceCream(int i) 
         {
             IceCream icecream = IceCreamList[i - 1];
 
@@ -36,7 +36,7 @@ namespace S10256978_PRG2Assignment.Classes
         {
             if (IceCreamList.Count > 1)
             {
-                IceCreamList.RemoveAt(i - 1);
+                IceCreamList.RemoveAt(i - 1); //Removing at the index entered
             }
             else
             {

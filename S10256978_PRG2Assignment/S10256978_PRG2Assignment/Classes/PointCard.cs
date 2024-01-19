@@ -19,7 +19,7 @@ namespace S10256978_PRG2Assignment.Classes
         {
             Points = p;
             PunchCard = pc;
-            Tier = "Ordinary";
+            Tier = "Ordinary"; //Assuming that every customer starts out ordinary
         }
         
         //Methods
