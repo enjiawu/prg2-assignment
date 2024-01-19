@@ -46,7 +46,7 @@ namespace S10256978_PRG2Assignment.Classes
             string history = "";
             foreach (Order order in OrderHistory)
             {
-                history += order + " ";
+                history += order + "\n";
             }
             return $"Name: {Name}\tMemberID: {MemberId}\tDOB: {Dob.ToString("dd/MM/yyyy")}\tCurrentOrder: {CurrentOrder}\tOrderHistory: {history}\tRewards: {Rewards}";
         }
