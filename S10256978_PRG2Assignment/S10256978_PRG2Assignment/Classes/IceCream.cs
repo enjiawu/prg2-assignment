@@ -85,6 +85,36 @@ namespace S10256978_PRG2Assignment.Classes
             return toppingsPrice; //Return price of flavours
         }
 
+        public string ReturnOption()
+        {
+            Dictionary<>
+            using (StreamReader sr = new StreamReader("options.csv"))
+            {
+                string header = sr.ReadLine(); //Reading header
+                string? s;
+
+                while((s = sr.ReadLine()) != null) //Reading all the details about each option
+                {
+                    string[] line = s.Split(','); 
+                    string option = line[0]; 
+                    int scoops = Convert.ToInt32(line[1]);
+                   
+                    if (line[2] != "")
+                    {
+                        bool dipped = Convert.ToBoolean(line[2]);
+                    }
+
+                    if (line[3] != "")
+                    {
+                        string waffleFlavour = line[3]; 
+                    }
+
+                    double cost = Convert.ToDouble(line[3]); 
+                }
+
+
+            }
+        }
         public override string ToString()
         {
             return $"Option: {Option}\tScoops: {Scoops}\tFlavours: {string.Join(", ", Flavours)}\tToppings: {string.Join(", ", Toppings)}\n";
