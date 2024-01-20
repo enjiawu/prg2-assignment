@@ -22,35 +22,20 @@ namespace S10256978_PRG2Assignment.Classes
         public override double CalculatePrice()
         {
             // Cone Calculation
-            double scoopPrice; 
-            
+            double optionBasePrice = 0.00;
 
-            if (Scoops == 1)
+            List<string> coneOptions = ReturnOption()["Cone"]; //Retrieving cone options available from options.csv
+            foreach (string coneOption in coneOptions)
             {
-                scoopPrice = 4.00;
-            }
-            else if (Scoops == 2)
-            {
-                scoopPrice = 5.50;
-            }
-            else if (Scoops == 3)
-            {
-                scoopPrice = 6.50;
-            }
-            else
-            {
-                scoopPrice = 0.00;
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from 1 to 3.");
+                string[] optionInfo = coneOption.Split(','); //splitting option info into option, scoops, waffle flavour and cost
+                if (Scoops == Convert.ToInt32(optionInfo[1]) && Dipped == Convert.ToBoolean(optionInfo[2]))
+                {
+                    optionBasePrice = Convert.ToDouble(optionInfo[2]);
+                    break;
+                }
             }
 
-            
-            double price = scoopPrice + CalculateFlavours() + CalculateToppings();
-
-            if (Dipped) 
-            {
-                price += 2.00;
-            }
-
+            double price = optionBasePrice + CalculateFlavours() + CalculateToppings();
             return price;
         }
 

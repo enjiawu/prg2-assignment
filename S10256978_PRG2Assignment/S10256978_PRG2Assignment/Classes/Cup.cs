@@ -15,30 +15,21 @@ namespace S10256978_PRG2Assignment.Classes
         // Methods
         public override double CalculatePrice()
         {
-            // cup calculation
-            double scoopPrice;
-            double premiumPrice = 0.00;
+            // Cup price calculation
+            double optionBasePrice = 0.00;
 
-            if (Scoops == 1)
+            List<string> cupOptions = ReturnOption()["Cup"]; //Retrieving cup options available from options.csv
+            foreach (string cupOption in cupOptions)
             {
-                scoopPrice = 4.00; 
-            }
-            else if (Scoops == 2) 
-            {
-                scoopPrice = 5.50;
-            }
-            else if (Scoops == 3)
-            {
-                scoopPrice = 6.50;
-            }
-            else
-            {
-                scoopPrice = 0.00; 
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from 1 to 3.");
+                string[] optionInfo = cupOption.Split(','); //splitting option info into option, scoops and cost
+                if (Scoops == Convert.ToInt32(optionInfo[1]))
+                {
+                    optionBasePrice = Convert.ToDouble(optionInfo[2]);
+                    break;
+                }
             }
 
-
-            double price = scoopPrice + CalculateFlavours() + CalculateToppings();
+            double price = optionBasePrice + CalculateFlavours() + CalculateToppings();
             return price;
         }
         public override string ToString()

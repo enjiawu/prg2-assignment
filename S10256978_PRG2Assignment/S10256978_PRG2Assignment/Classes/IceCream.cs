@@ -57,7 +57,7 @@ namespace S10256978_PRG2Assignment.Classes
             return flavoursPrice; //Return price of flavours
         }
 
-        public double CalculateToppings()
+        public double CalculateToppings() //To read data of toppings from toppings.csv and calculate the total costs of toppings
         {
             //Retrieving information of flavours from toppings.csv
             double toppingsPrice = 0.00; //To keep track of the additional price of all toppings
@@ -85,9 +85,13 @@ namespace S10256978_PRG2Assignment.Classes
             return toppingsPrice; //Return price of flavours
         }
 
-        /*public string ReturnOption()
+        public Dictionary<string, List<string>> ReturnOption() //To read data from options.csv and return them compiled in a dictionary 
         {
-            Dictionary<>
+            Dictionary<string, List<string>> optionData = new Dictionary<string, List<string>> (); //Dictionary to keep track of all the different options for Cups, Cones and Waffles
+            List<string> cupOptions = new List<string>(); //List to keep information on all the available options for cups
+            List<string> coneOptions = new List<string>(); //List to keep information on all the available options for cones
+            List<string> waffleOptions = new List<string>(); //List to keep information on all the available options for waffles
+
             using (StreamReader sr = new StreamReader("options.csv"))
             {
                 string header = sr.ReadLine(); //Reading header
@@ -97,24 +101,36 @@ namespace S10256978_PRG2Assignment.Classes
                 {
                     string[] line = s.Split(','); 
                     string option = line[0]; 
-                    int scoops = Convert.ToInt32(line[1]);
-                   
-                    if (line[2] != "")
-                    {
-                        bool dipped = Convert.ToBoolean(line[2]);
-                    }
+                    int scoops = Convert.ToInt32(line[1]);               
+                    double cost = Convert.ToDouble(line[3]);
 
-                    if (line[3] != "")
-                    {
-                        string waffleFlavour = line[3]; 
-                    }
+                    string optionInfo; 
 
-                    double cost = Convert.ToDouble(line[3]); 
+                    if (option == "Cup") //if option is cup, add option to cupOptions List
+                    {
+                        optionInfo = $"{option},{scoops},{cost}";
+                        cupOptions.Add(optionInfo); //Add cup option into cupOptions
+                    }
+                    else if (option == "Cone") //if option is cone, add option to coneOptions List
+                    {
+                        optionInfo = $"{option},{scoops},{line[2]},{cost}";
+                        coneOptions.Add(optionInfo); //Add cup option into cupOptions
+                    }
+                    else
+                    {
+                        optionInfo = $"{option},{scoops},{line[3]},{cost}";
+                        waffleOptions.Add(optionInfo); //Add cup option into cupOptions
+                    }
                 }
-
-
             }
-        }*/
+
+            //Adding option lists into the main optionData dictionary
+            optionData["Cup"] = cupOptions;
+            optionData["Cone"] = coneOptions;
+            optionData["Waffle"] = waffleOptions;
+
+            return optionData;
+        }
 
         public override string ToString()
         {

@@ -145,10 +145,10 @@ void CreateCustomerOrder()
         newOrder.Id = orderId;
         newOrder.TimeReceived = timeReceived;
 
-        Console.Write("Enter ice cream option (Cup/Cone/Waffle): ");
+        Console.Write("Enter ice cream option (Cup/Cone/Waffle): "); //check that option is in the correct format
         string option = Convert.ToString(Console.ReadLine());
 
-        Console.Write("Enter number of scoops: ");
+        Console.Write("Enter number of scoops: "); //check that number of scoops is between 1-3
         int scoops = Convert.ToInt32(Console.ReadLine());
 
         Console.Write("Upgrade to chocolate-dipped cone? (Y/N): ");

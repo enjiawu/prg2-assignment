@@ -21,35 +21,21 @@ namespace S10256978_PRG2Assignment.Classes
         // Method
         public override double CalculatePrice()
         {
-            // Waffle calculation
-            double scoopPrice;
-            double premiumPrice = 0.00;
+            // Waffle price calculation
+            double optionBasePrice = 0.00;
 
-            if (Scoops == 1)
+            List<string> waffleOptions = ReturnOption()["Waffle"]; //Retrieving waffle options available from options.csv
+            foreach (string waffleOption in waffleOptions)
             {
-                scoopPrice = 7.00;
-            }
-            else if (Scoops == 2)
-            {
-                scoopPrice = 8.50;
-            }
-            else if (Scoops == 3)
-            {
-                scoopPrice = 9.50;
-            }
-            else
-            {
-                scoopPrice = 0.00;
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from  1 to 3.");
+                string[] optionInfo = waffleOption.Split(','); //splitting option info into option, scoops, waffle flavour and cost
+                if (Scoops == Convert.ToInt32(optionInfo[1]) && WaffleFlavour == optionInfo[2])
+                {
+                    optionBasePrice = Convert.ToDouble(optionInfo[2]);
+                    break;
+                }
             }
 
-            double price = scoopPrice + CalculateFlavours() + CalculateToppings();
-
-            if (WaffleFlavour != "Original")
-             {
-                 price += 3.00;
-             }
-
+            double price = optionBasePrice + CalculateFlavours() + CalculateToppings();
             return price;
         }
 
