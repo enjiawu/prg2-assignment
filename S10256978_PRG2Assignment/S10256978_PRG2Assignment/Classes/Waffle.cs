@@ -40,26 +40,16 @@ namespace S10256978_PRG2Assignment.Classes
             else
             {
                 scoopPrice = 0.00;
-                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number fromm  1 to 3.");
+                Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from  1 to 3.");
             }
 
-             foreach (Flavour flavour in Flavours)
-             {
-                 if (flavour.Premium)
-                 {
-                     premiumPrice = 3.00;
-                 }
-             }
+            double price = scoopPrice + CalculateFlavours() + CalculateToppings();
 
-             double price = scoopPrice + premiumPrice + Toppings.Count * 1.00;
- 
             if (WaffleFlavour != "Original")
              {
                  price += 3.00;
              }
 
-
-            
             return price;
         }
 

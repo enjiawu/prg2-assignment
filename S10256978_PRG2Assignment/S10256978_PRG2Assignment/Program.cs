@@ -3,7 +3,6 @@ using System.ComponentModel.Design;
 
 Dictionary<int, Customer> customerList = new Dictionary<int, Customer>();
 
-
 //Option 2 - List all current orders
 Dictionary<int, Order> regularQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in regular queue
 Dictionary<int, Order> goldMembersQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in gold members queue
