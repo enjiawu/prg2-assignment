@@ -1,10 +1,21 @@
 ﻿using S10256978_PRG2Assignment.Classes;
 using System.ComponentModel.Design;
 
-Dictionary<int, Customer> customerList = new Dictionary<int, Customer>();
+void Menu() //Function to display menu
+{
+    Console.Write("Ice Cream Shop Management System\n" +
+        "----------------------------------\n" +
+        "[1] List all customers\n" +
+        "[2] List all current orders\n" +
+        "[3] Register a new customer\n" +
+        "[4] Create a customer's order\n" +
+        "[5] Display order details of a customer\n" +
+        "[6] Modify order details\n" +
+        "[0] Quit\n" +
+        "Enter option: ");
+}
 
-InitCustomers(customerList);
-DisplayAllCustomer(customerList);
+Dictionary<int, Customer> customerList = new Dictionary<int, Customer>(); //List to keep keep of all the customer details
 
 void InitCustomers(Dictionary<int, Customer> customerList)
 {
@@ -18,7 +29,7 @@ void InitCustomers(Dictionary<int, Customer> customerList)
             string[] line = s.Split(',');
             string Name = line[0];
             int MemberId = Convert.ToInt32(line[1]);
-            DateTime Dob = DateTime.ParseExact(line[2], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            DateTime Dob = Convert.ToDateTime(line[2]);
             string MemberShipStatus = line[3];
             int MemberShipPoint = Convert.ToInt32(line[4]);
             int PunchCard = Convert.ToInt32(line[5]);
@@ -38,7 +49,7 @@ void InitCustomers(Dictionary<int, Customer> customerList)
 }
 
 // Option 1 - display all customer
-void DisplayAllCustomer(Dictionary<int, Customer> customerList)
+void DisplayAllCustomers(Dictionary<int, Customer> customerList)
 {
     // Display the header
     Console.WriteLine($"{"Name",-15}{"MemberId",-15}{"Date of Birth",-15}{"Membership Status",-22}{"Membership Points",-22}{"PunchCard",-22}");
@@ -53,7 +64,7 @@ void DisplayAllCustomer(Dictionary<int, Customer> customerList)
 //Option 2 - List all current orders
 Dictionary<int, Order> regularQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in regular queue
 Dictionary<int, Order> goldMembersQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in gold members queue
-void ListCurrentOrders()
+void ListCurrentOrders(Dictionary<int, Order> regularQueue, Dictionary<int, Order> goldMembersQueue)
 {
     Console.WriteLine("Current orders in the regular queue");
     Console.WriteLine("-------------------------------");
@@ -71,7 +82,7 @@ void ListCurrentOrders()
 }
 
 // Option 3 - Register new customer
-void RegisterNewCustomer()
+void RegisterNewCustomer(Dictionary<int, Customer> customerList)
 {
     Console.Write("Enter customer name: ");
     string name = Convert.ToString(Console.ReadLine());
@@ -96,7 +107,7 @@ void RegisterNewCustomer()
     AppendCustomerToCsv(newCustomer);
 
     Console.WriteLine("Registration successful!");
-    ListAllCustomers(customerList);
+    DisplayAllCustomers(customerList);
 }
 
 void AppendCustomerToCsv(Customer customer)
@@ -108,6 +119,7 @@ void AppendCustomerToCsv(Customer customer)
 }
 
 // Option 4 - Create customer order
+/*
 void CreateCustomerOrder()
 {
     Console.WriteLine("Select a customer by entering their Member ID:");
@@ -195,7 +207,7 @@ void CreateCustomerOrder()
     {
         Console.WriteLine("Customer not found.");
      }
-}
+}*/
 
 //Option 5 - Display order details of a customers
 void InitOrders(Dictionary<int, Customer> customerList)
@@ -331,7 +343,7 @@ void InitOrders(Dictionary<int, Customer> customerList)
 void ListOrderDetails(Dictionary<int, Customer> customerList)
 {
     //Listing the customers
-    ListAllCustomers(customerList);
+    DisplayAllCustomers(customerList);
 
     try //Data Validation
     {
@@ -369,239 +381,319 @@ void ListOrderDetails(Dictionary<int, Customer> customerList)
 void ModifyOrder(Dictionary<int, Customer> customerList)
 {
     //Listing all customers
-    ListAllCustomers(customerList);
+    DisplayAllCustomers(customerList);
 
-    //Prompting user to select a customer
-    Console.Write("Enter customer ID: ");
-    int customerId = Convert.ToInt32(Console.ReadLine());
-
-    //Retrieving selected customer's current order
-    Customer selectedCustomer = customerList[customerId];
-    Order currentOrder = selectedCustomer.CurrentOrder;
-
-    //Listing all the ice cream objects contained in the order
-    int count = 1;
-    foreach(IceCream ic in currentOrder.IceCreamList)
+    try
     {
-        Console.WriteLine($"[Ice Cream {count}]\n{ic}");
-        count++;
-    }
+        //Prompting user to select a customer
+        Console.Write("Enter customer ID: ");
+        int customerId = Convert.ToInt32(Console.ReadLine());
 
-    //Prompting user to select 1-3
-    Console.Write("\n[1] Choose an existing ice cream to modify\n" +
-        "[2] Add an entirely new ice cream object to the order\n" +
-        "[3] Choose an existing ice cream object to delete from the order\n" +
-        "Enter your option: "); //Printing out options
-    int option = Convert.ToInt32(Console.ReadLine()); //Reading user input
+        //Retrieving selected customer's current order
+        Customer selectedCustomer = customerList[customerId];
+        Order currentOrder = selectedCustomer.CurrentOrder;
 
-    if (option == 1) //Option 1 - Modifying an existing ice cream
-    {
-        Console.WriteLine("Choose an existing ice cream to modify");
-        Console.WriteLine("---------------------------------------");
-
-        //Prompting user to select an ice cream
-        Console.Write("Enter a number to select which ice cream to modify: ");
-        int icNo = Convert.ToInt32(Console.ReadLine());
-
-        //Calling method to modify ice cream
-        currentOrder.ModifyIceCream(icNo);
-    }
-    else if (option == 2)
-    {
-        Console.Write("Add an entirely new ice cream object to the order");
-        Console.WriteLine("----------------------------------------------");
-
-        //Prompting user for all required info to create a new ice cream
-        while (true)
+        if (currentOrder != null)
         {
-            Console.Write("Enter ice cream option (Cone, Waffle or Cup): ");
-            string icOption = Console.ReadLine();
-            Console.Write("Enter number of scoops: ");
-            int scoops = Convert.ToInt32(Console.ReadLine());
-
-            List<Flavour> flavours = new List<Flavour>(); //list of hold all the flavours to be added
-            List<Topping> toppings = new List<Topping>(); //list of hold all the toppings to be added
-            for (int i = 0; i < scoops; i++) //getting flavours for new ice cream
+            //Listing all the ice cream objects contained in the order
+            int count = 1;
+            foreach (IceCream ic in currentOrder.IceCreamList)
             {
-                Console.Write("\nAvailable Flavours\n" +
-                            "----------------\n" +
-                            "[1] Vanilla\n" +
-                            "[2] Chocolate\n" +
-                            "[3] Strawberry\n" +
-                            "[4] Durian\n" +
-                            "[5] Ube\n" +
-                            "[6] Sea Salt\n" +
-                            "Enter flavour to add: ");
-                int flavourOption = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine($"[Ice Cream {count}]\n{ic}");
+                count++;
+            }
 
-                int quantity;
-                //Check for quantity of flavour
+            //Prompting user to select 1-3
+            Console.Write("\n[1] Choose an existing ice cream to modify\n" +
+                "[2] Add an entirely new ice cream object to the order\n" +
+                "[3] Choose an existing ice cream object to delete from the order\n" +
+                "Enter your option: "); //Printing out options
+            int option = Convert.ToInt32(Console.ReadLine()); //Reading user input
+
+            if (option == 1) //Option 1 - Modifying an existing ice cream
+            {
+                Console.WriteLine("Choose an existing ice cream to modify");
+                Console.WriteLine("---------------------------------------");
+
+                //Prompting user to select an ice cream
+                Console.Write("Enter a number to select which ice cream to modify: ");
+                int icNo = Convert.ToInt32(Console.ReadLine());
+
+                //Calling method to modify ice cream
+                currentOrder.ModifyIceCream(icNo);
+            }
+            else if (option == 2)
+            {
+                Console.Write("Add an entirely new ice cream object to the order");
+                Console.WriteLine("----------------------------------------------");
+
+                //Prompting user for all required info to create a new ice cream
                 while (true)
                 {
-                    Console.Write("Enter quantity of flavour");
-                    quantity = Convert.ToInt32(Console.ReadLine());
-                    if (quantity > scoops) //Making sure quantity of selected flavour does not exceed the number of scoops in the ice cream
-                    {
-                        Console.WriteLine($"Quantity must be lesser than {scoops}!");
+                    Console.Write("Enter ice cream option (Cone, Waffle or Cup): ");
+                    string icOption = Console.ReadLine();
+                    Console.Write("Enter number of scoops: ");
+                    int scoops = Convert.ToInt32(Console.ReadLine());
 
+                    List<Flavour> flavours = new List<Flavour>(); //list of hold all the flavours to be added
+                    List<Topping> toppings = new List<Topping>(); //list of hold all the toppings to be added
+                    for (int i = 0; i < scoops; i++) //getting flavours for new ice cream
+                    {
+                        Console.Write("\nAvailable Flavours\n" +
+                                    "----------------\n" +
+                                    "[1] Vanilla\n" +
+                                    "[2] Chocolate\n" +
+                                    "[3] Strawberry\n" +
+                                    "[4] Durian\n" +
+                                    "[5] Ube\n" +
+                                    "[6] Sea Salt\n" +
+                                    "Enter flavour to add: ");
+                        int flavourOption = Convert.ToInt32(Console.ReadLine());
+
+                        int quantity;
+                        //Check for quantity of flavour
+                        while (true)
+                        {
+                            Console.Write("Enter quantity of flavour");
+                            quantity = Convert.ToInt32(Console.ReadLine());
+                            if (quantity > scoops) //Making sure quantity of selected flavour does not exceed the number of scoops in the ice cream
+                            {
+                                Console.WriteLine($"Quantity must be lesser than {scoops}!");
+
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        Flavour newFlavour;
+                        if (flavourOption == 1)
+                        {
+                            newFlavour = new Flavour("Vanilla", false, quantity);
+                        }
+                        else if (flavourOption == 2)
+                        {
+                            newFlavour = new Flavour("Chocolate", false, quantity);
+                        }
+                        else if (flavourOption == 3)
+                        {
+                            newFlavour = new Flavour("Strawberry", false, quantity);
+                        }
+                        else if (flavourOption == 4)
+                        {
+                            newFlavour = new Flavour("Durian", true, quantity);
+                        }
+                        else if (flavourOption == 5)
+                        {
+                            newFlavour = new Flavour("Ube", true, quantity);
+                        }
+                        else
+                        {
+                            newFlavour = new Flavour("Sea Salt", true, quantity);
+                        }
+                        flavours.Add(newFlavour); //adding flavour to flavours list
+
+                        //Quittng the for loop if the quantity of flavours have been hit
+                        if (quantity == scoops)
+                        {
+                            break;
+                        }
+                    }
+
+                    for (int i = 0; i <= 4; i++) //getting toppings for new ice cream
+                    {
+                        Console.Write("Available Toppings\n" +
+                               "----------------\n" +
+                               "[1] Sprinkles\n" +
+                               "[2] Mochi\n" +
+                               "[3] Sago\n" +
+                               "[4] Oreos\n" +
+                               "[0] Done" +
+                               "Enter new topping(s): ");
+
+                        int toppingOption = Convert.ToInt32(Console.ReadLine());
+                        if (toppingOption == 0)
+                        {
+                            break; //break from while loop
+                        }
+
+                        Topping newTopping;
+                        if (toppingOption == 1)
+                        {
+                            newTopping = new Topping("Sprinkles");
+                        }
+                        else if (toppingOption == 2)
+                        {
+                            newTopping = new Topping("Mochi");
+                        }
+                        else if (toppingOption == 3)
+                        {
+                            newTopping = new Topping("Sago");
+                        }
+                        else
+                        {
+                            newTopping = new Topping("Oreos");
+                        }
+                        toppings.Add(newTopping); //Adding new toppings 
+                    }
+
+                    IceCream iceCream;
+                    if (icOption == "Cone")
+                    {
+                        bool dipped;
+                        Console.WriteLine("Cone dippings available\n" +
+                            "-------------------" +
+                            "[1] Chocolate-dippedcone\n" +
+                            "[2] Regular cone\n" +
+                            "Enter option: ");
+                        int coneOption = Convert.ToInt32(Console.ReadLine());
+
+                        if (coneOption == 1) //Check if cone is dipped
+                        {
+                            dipped = true;
+                        }
+                        else
+                        {
+                            dipped = false;
+                        }
+
+                        iceCream = new Cone("Cone", scoops, flavours, toppings, dipped);
+                    }
+                    else if (icOption == "Waffle")
+                    {
+                        string waffleFlavour = "";
+                        Console.WriteLine("Waffle flavours available\n" +
+                            "-------------------" +
+                            "[1] Original\n" +
+                            "[2] Red Velvet\n" +
+                            "[3] Charcoal\n" +
+                            "[4] Pandan Waffle\n" +
+                            "Enter option: ");
+                        int waffleOption = Convert.ToInt32(Console.ReadLine());
+
+                        if (waffleOption == 1)
+                        {
+                            waffleFlavour = "Original";
+                        }
+                        else if (waffleOption == 2)
+                        {
+                            waffleFlavour = "Red Velvet";
+                        }
+                        else if (waffleOption == 3)
+                        {
+                            waffleFlavour = "Charcoal";
+                        }
+                        else
+                        {
+                            waffleFlavour = "Pandan Waffle";
+                        }
+                        iceCream = new Waffle("Waffle", scoops, flavours, toppings, waffleFlavour);
                     }
                     else
                     {
-                        break;
+                        iceCream = new Cup("Cup", scoops, flavours, toppings);
                     }
+                    currentOrder.AddIceCream(iceCream); //Adding the new ice cream to the current order
+                    Console.WriteLine("Ice Cream has been added.");
                 }
-
-                Flavour newFlavour;
-                if (flavourOption == 1)
-                {
-                    newFlavour = new Flavour("Vanilla", false, quantity);
-                }
-                else if (flavourOption == 2)
-                {
-                    newFlavour = new Flavour("Chocolate", false, quantity);
-                }
-                else if (flavourOption == 3)
-                {
-                    newFlavour = new Flavour("Strawberry", false, quantity);
-                }
-                else if (flavourOption == 4)
-                {
-                    newFlavour = new Flavour("Durian", true, quantity);
-                }
-                else if (flavourOption == 5)
-                {
-                    newFlavour = new Flavour("Ube", true, quantity);
-                }
-                else
-                {
-                    newFlavour = new Flavour("Sea Salt", true, quantity);
-                }
-                flavours.Add(newFlavour); //adding flavour to flavours list
-
-                //Quittng the for loop if the quantity of flavours have been hit
-                if (quantity == scoops)
-                {
-                    break;
-                }
-            }
-
-            for (int i = 0; i <= 4; i++) //getting toppings for new ice cream
-            {
-                Console.Write("Available Toppings\n" +
-                       "----------------\n" +
-                       "[1] Sprinkles\n" +
-                       "[2] Mochi\n" +
-                       "[3] Sago\n" +
-                       "[4] Oreos\n" +
-                       "[0] Done" +
-                       "Enter new topping(s): ");
-
-                int toppingOption = Convert.ToInt32(Console.ReadLine());
-                if (toppingOption == 0)
-                {
-                    break; //break from while loop
-                }
-
-                Topping newTopping;
-                if (toppingOption == 1)
-                {
-                    newTopping = new Topping("Sprinkles");
-                }
-                else if (toppingOption == 2)
-                {
-                    newTopping = new Topping("Mochi");
-                }
-                else if (toppingOption == 3)
-                {
-                    newTopping = new Topping("Sago");
-                }
-                else
-                {
-                    newTopping = new Topping("Oreos");
-                }
-                toppings.Add(newTopping); //Adding new toppings 
-            }
-
-            IceCream iceCream;
-            if (icOption == "Cone")
-            {
-                bool dipped;
-                Console.WriteLine("Cone dippings available\n" +
-                    "-------------------" +
-                    "[1] Chocolate-dippedcone\n" +
-                    "[2] Regular cone\n" +
-                    "Enter option: ");
-                int coneOption = Convert.ToInt32(Console.ReadLine());
-
-                if (coneOption == 1) //Check if cone is dipped
-                {
-                    dipped = true;
-                }
-                else
-                {
-                    dipped = false;
-                }
-
-                iceCream = new Cone("Cone", scoops, flavours, toppings, dipped);
-            }
-            else if (icOption == "Waffle")
-            {
-                string waffleFlavour = "";
-                Console.WriteLine("Waffle flavours available\n" +
-                    "-------------------" +
-                    "[1] Original\n" +
-                    "[2] Red Velvet\n" +
-                    "[3] Charcoal\n" +
-                    "[4] Pandan Waffle\n" +
-                    "Enter option: ");
-                int waffleOption = Convert.ToInt32(Console.ReadLine());
-
-                if (waffleOption == 1)
-                {
-                    waffleFlavour = "Original";
-                }
-                else if (waffleOption == 2)
-                {
-                    waffleFlavour = "Red Velvet";
-                }
-                else if (waffleOption == 3)
-                {
-                    waffleFlavour = "Charcoal";
-                }
-                else
-                {
-                    waffleFlavour = "Pandan Waffle";
-                }
-                iceCream = new Waffle("Waffle", scoops, flavours, toppings, waffleFlavour);
             }
             else
             {
-                iceCream = new Cup("Cup", scoops, flavours, toppings);
-            }
-            currentOrder.AddIceCream(iceCream); //Adding the new ice cream to the current order
-            Console.WriteLine("Ice Cream has been added.");
-        }
-    }
-    else
-    {
-        Console.Write("Select which ice cream to delete: ");
-        int delOption = Convert.ToInt32(Console.ReadLine());   
+                Console.Write("Select which ice cream to delete: ");
+                int delOption = Convert.ToInt32(Console.ReadLine());
 
-        if (currentOrder.IceCreamList.Count > 0)
-        {
-            currentOrder.DeleteIceCream(delOption);
-            Console.WriteLine("Ice Cream has been deleted.");
+                if (currentOrder.IceCreamList.Count > 0)
+                {
+                    currentOrder.DeleteIceCream(delOption);
+                    Console.WriteLine("Ice Cream has been deleted.");
+                }
+                else
+                {
+                    Console.WriteLine("Error! There cannot be zero ice creams in an order!");
+                }
+
+            }
+
+            Console.WriteLine("Updated Order\n" +
+                "-------------------");
+            Console.WriteLine(currentOrder);
         }
         else
         {
-            Console.WriteLine("Error! There cannot be zero ice creams in an order!");
+            Console.WriteLine($"Customer ID [{customerId}] does not have any current orders. Please make an order first.");
         }
-
     }
-
-    Console.WriteLine("Updated Order\n" +
-        "-------------------");
-    Console.WriteLine(currentOrder);
+    catch(Exception ex)
+    {
+        Console.WriteLine("No customer with that id exists! Please try again.");
+    }
 }
 
-ModifyOrder(customerList);
+//Main Program
+InitCustomers(customerList); //Reading data from customers.csv
+InitOrders(customerList); //Reading data from orders.csv
+
+while (true) //While loop that keeps running until customer quits
+{
+    try //Data validation
+    {
+        Menu(); //Printing out the menu
+        int option = Convert.ToInt32(Console.ReadLine()); //Read customer's input 
+
+        if (option == 0) //Option 0 - Quit
+        {
+            Console.WriteLine("Bye!");
+            break;
+        }
+        else if (option == 1) //Option 1 - List all customers
+        {
+            Console.WriteLine("\nOption 1 - List all customers");
+            Console.WriteLine("------------------------------\n");
+            DisplayAllCustomers(customerList);
+        }
+        else if (option == 2) //Option 2 - List all current orders
+        {
+            Console.WriteLine("\nOption 2 - List all current orders");
+            Console.WriteLine("----------------------------------\n");
+            ListCurrentOrders(regularQueue, goldMembersQueue);
+        }
+        else if (option == 3) //Option 3 - Register a new customer
+        {
+            Console.WriteLine("\nOption 3 - Register a new customer");
+            Console.WriteLine("----------------------------------\n");
+            RegisterNewCustomer(customerList);
+        }
+        else if (option == 4)
+        {
+            Console.WriteLine("\nOption 4 - Create a customer's order");
+            Console.WriteLine("----------------------------------\n");
+            //CreateCustomerOrder();
+        }
+        else if (option == 5)
+        {
+            Console.WriteLine("\nOption 5 - Display order details of a customer");
+            Console.WriteLine("-------------------------------------------------\n");
+            ListOrderDetails(customerList);
+        }
+        else
+        {
+            Console.WriteLine("\nOption 6 - Modify order details");
+            Console.WriteLine("----------------------------------\n");
+            ModifyOrder(customerList);
+        }
+        Console.WriteLine();
+    }
+    catch (FormatException ex)
+    {
+        Console.WriteLine("\nIncorrect format! Please enter a number from 1-6!\n");
+    }
+    catch (ArgumentOutOfRangeException ex)
+    {
+        Console.WriteLine("\nPlease only enter a number between 1-6!\n");
+    }
+    catch (Exception ex) 
+    {
+        Console.WriteLine($"\n{ex.Message}: Please only enter a number between 1-6!\n");
+    }
+}

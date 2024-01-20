@@ -85,7 +85,7 @@ namespace S10256978_PRG2Assignment.Classes
             return toppingsPrice; //Return price of flavours
         }
 
-        public string ReturnOption()
+        /*public string ReturnOption()
         {
             Dictionary<>
             using (StreamReader sr = new StreamReader("options.csv"))
@@ -114,7 +114,8 @@ namespace S10256978_PRG2Assignment.Classes
 
 
             }
-        }
+        }*/
+
         public override string ToString()
         {
             return $"Option: {Option}\tScoops: {Scoops}\tFlavours: {string.Join(", ", Flavours)}\tToppings: {string.Join(", ", Toppings)}\n";
