@@ -82,16 +82,39 @@ void ListCurrentOrders(Dictionary<int, Order> regularQueue, Dictionary<int, Orde
 }
 
 // Option 3 - Register new customer
-void RegisterNewCustomer(Dictionary<int, Customer> customerList)
+void RegisterNewCustomer()
 {
     Console.Write("Enter customer name: ");
     string name = Convert.ToString(Console.ReadLine());
 
-    Console.Write("Enter customer ID number: ");
-    int memberId = Convert.ToInt32(Console.ReadLine());
+    int memberId;
+    while (true)
+    {
+        Console.Write("Enter customer ID number: ");
+        if (int.TryParse(Console.ReadLine(), out memberId))
+        {
+            if (customerList.ContainsKey(memberId))
+            {
+                Console.WriteLine($"Customer ID {memberId} already exists. Please choose a different ID.");
+            }
+            else
+            {
+                break; // Exit the loop if the ID is valid and not already in use
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
+        }
+    }
 
     Console.Write("Enter customer date of birth (dd/mm/yyyy): ");
-    DateTime dob = Convert.ToDateTime(Console.ReadLine());
+    DateTime dob;
+    while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dob))
+    {
+        Console.WriteLine("Invalid date format. Please enter a valid date in the format dd/MM/yyyy.");
+        Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
+    }
 
     // Create a new customer object
     Customer newCustomer = new Customer(name, memberId, dob);
@@ -100,21 +123,24 @@ void RegisterNewCustomer(Dictionary<int, Customer> customerList)
     PointCard newPointCard = new PointCard();
     newCustomer.Rewards = newPointCard;
 
+    // Set the initial Tier to "Ordinary"
+    newPointCard.Tier = "Ordinary";
+
     // Add the new customer to the dictionary
     customerList.Add(memberId, newCustomer);
 
     // Append the customer information to the CSV file
     AppendCustomerToCsv(newCustomer);
 
-    Console.WriteLine("Registration successful!");
-    DisplayAllCustomers(customerList);
+    Console.WriteLine("Registration successful!\n");
+    DisplayAllCustomer(customerList);
 }
 
 void AppendCustomerToCsv(Customer customer)
 {
     using (StreamWriter writer = new StreamWriter("Customers.csv", true))
     {
-        writer.WriteLine($"{customer.Name},{customer.MemberId},{customer.Dob.ToString("dd/MM/yyyy")},Ordinary,0,0");
+        writer.WriteLine($"{customer.Name},{customer.MemberId},{customer.Dob.ToString("dd/MM/yyyy")},{customer.Rewards.Tier},{customer.Rewards.Points},{customer.Rewards.PunchCard}");
     }
 }
 
