@@ -23,6 +23,7 @@ namespace S10256978_PRG2Assignment.Classes
         {
             // Cone Calculation
             double scoopPrice; //where are u gonna implement the premium flavours price?
+            double premiumPrice == 0.00;
 
             if (Scoops == 1)
             {
@@ -42,7 +43,15 @@ namespace S10256978_PRG2Assignment.Classes
                 Console.WriteLine("Warning: Invalid number of scoops. Please enter a number from 1 to 3.");
             }
 
-            double price = scoopPrice + Flavours.Count * 2.00 + Toppings.Count * 1.00;
+            foreach (Flavour flavour in Flavours)
+            {
+                if (flavour.Premium)
+                {
+                    premiumPrice = 3.00;
+                }
+            }
+            
+            double price = scoopPrice + premiumPrice + Toppings.Count * 1.00;
 
             if (Dipped) 
             {
