@@ -3,8 +3,10 @@ using System.ComponentModel.Design;
 
 Dictionary<int, Customer> customerList = new Dictionary<int, Customer>();
 
-// Option 1: List all customer information
-void ListAllCustomers(Dictionary<int, Customer> customerList)
+InitCustomers(customerList);
+DisplayAllCustomer(customerList);
+
+void InitCustomers(Dictionary<int, Customer> customerList)
 {
     using (StreamReader sr = new StreamReader("customers.csv"))
     {
@@ -16,12 +18,35 @@ void ListAllCustomers(Dictionary<int, Customer> customerList)
             string[] line = s.Split(',');
             string Name = line[0];
             int MemberId = Convert.ToInt32(line[1]);
-            DateTime Dob = Convert.ToDateTime(line[2]);
+            DateTime Dob = DateTime.ParseExact(line[2], "dd/MM/yyyy", CultureInfo.InvariantCulture);
             string MemberShipStatus = line[3];
             int MemberShipPoint = Convert.ToInt32(line[4]);
             int PunchCard = Convert.ToInt32(line[5]);
+
+            //Assigning to necessary classes
+
+            Customer customer = new Customer(Name, MemberId, Dob);
+            PointCard pointCard = new PointCard(MemberShipPoint,PunchCard);
+
+            pointCard.Tier = MemberShipStatus;
+            customer.Rewards = pointCard;
+            customerList[customer.MemberId] = customer;
+
         }
 
+    }
+}
+
+// Option 1 - display all customer
+void DisplayAllCustomer(Dictionary<int, Customer> customerList)
+{
+    // Display the header
+    Console.WriteLine($"{"Name",-15}{"MemberId",-15}{"Date of Birth",-15}{"Membership Status",-22}{"Membership Points",-22}{"PunchCard",-22}");
+
+    foreach (Customer customer in customerList.Values)
+    {
+        Console.WriteLine($"{customer.Name, -15}{customer.MemberId, -15}{customer.Dob.ToString("dd/MM/yyyy"), -15}" +
+            $"{customer.Rewards.Tier,-22}{customer.Rewards.Points,-22}{customer.Rewards.PunchCard,-22}");
     }
 }
 
