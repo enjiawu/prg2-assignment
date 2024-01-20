@@ -3,6 +3,28 @@ using System.ComponentModel.Design;
 
 Dictionary<int, Customer> customerList = new Dictionary<int, Customer>();
 
+// Option 1: List all customer information
+void ListAllCustomers(Dictionary<int, Customer> customerList)
+{
+    using (StreamReader sr = new StreamReader("customers.csv"))
+    {
+        string header = sr.ReadLine(); // Read header
+        string? s;
+
+        while ((s = sr.ReadLine()) != null)
+        {
+            string[] line = s.Split(',');
+            string Name = line[0];
+            int MemberId = Convert.ToInt32(line[1]);
+            DateTime Dob = Convert.ToDateTime(line[2]);
+            string MemberShipStatus = line[3];
+            int MemberShipPoint = Convert.ToInt32(line[4]);
+            int PunchCard = Convert.ToInt32(line[5]);
+        }
+
+    }
+}
+
 //Option 2 - List all current orders
 Dictionary<int, Order> regularQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in regular queue
 Dictionary<int, Order> goldMembersQueue = new Dictionary<int, Order>(); //Dictionary to store current orders in gold members queue
@@ -21,6 +43,133 @@ void ListCurrentOrders()
     {
         Console.WriteLine(order.ToString());
     }
+}
+
+// Option 3 - Register new customer
+void RegisterNewCustomer()
+{
+    Console.Write("Enter customer name: ");
+    string name = Convert.ToString(Console.ReadLine());
+
+    Console.Write("Enter customer ID number: ");
+    int memberId = Convert.ToInt32(Console.ReadLine());
+
+    Console.Write("Enter customer date of birth (dd/mm/yyyy): ");
+    DateTime dob = Convert.ToDateTime(Console.ReadLine());
+
+    // Create a new customer object
+    Customer newCustomer = new Customer(name, memberId, dob);
+
+    // Create a new PointCard object
+    PointCard newPointCard = new PointCard();
+    newCustomer.Rewards = newPointCard;
+
+    // Add the new customer to the dictionary
+    customerList.Add(memberId, newCustomer);
+
+    // Append the customer information to the CSV file
+    AppendCustomerToCsv(newCustomer);
+
+    Console.WriteLine("Registration successful!");
+    ListAllCustomers(customerList);
+}
+
+void AppendCustomerToCsv(Customer customer)
+{
+    using (StreamWriter writer = new StreamWriter("Customers.csv", true))
+    {
+        writer.WriteLine($"{customer.Name},{customer.MemberId},{customer.Dob.ToString("dd/MM/yyyy")},Ordinary,0,0");
+    }
+}
+
+// Option 4 - Create customer order
+void CreateCustomerOrder()
+{
+    Console.WriteLine("Select a customer by entering their Member ID:");
+
+    foreach (var kvp in customerList)
+    {
+        Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
+    }
+
+    Console.Write("Enter Member ID: ");
+    int memberId = Convert.ToInt32(Console.ReadLine());
+
+    if (customerList.TryGetValue(memberId, out Customer selectedCustomer))
+    {
+        Order newOrder = new Order();
+        selectedCustomer.CurrentOrder = newOrder;
+
+        Console.Write("Enter order ID: ");
+        int orderId = Convert.ToInt32(Console.ReadLine());
+
+        DateTime timeReceived = DateTime.Now; // You can set the time received as the current time
+
+        newOrder.Id = orderId;
+        newOrder.TimeReceived = timeReceived;
+
+        Console.Write("Enter ice cream option (Cup/Cone/Waffle): ");
+        string option = Convert.ToString(Console.ReadLine());
+
+        Console.Write("Enter number of scoops: ");
+        int scoops = Convert.ToInt32(Console.ReadLine());
+
+        Console.Write("Upgrade to chocolate-dipped cone? (Y/N): ");
+        bool dipped = Convert.ToBoolean(Console.ReadLine().ToUpper() == "Y");
+
+        Console.Write("Choose waffle flavor (Red Velvet/Charcoal/Pandan): ");
+        string waffleFlavour = Convert.ToString(Console.ReadLine());
+
+        Console.Write("Enter ice cream flavors (comma-separated): ");
+        string[] flavors = Console.ReadLine().Split(',');
+
+        List<Flavour> flavourList = new List<Flavour>();
+        
+        for (int i = 0; i < flavors.Length; i++)
+        {
+            flavourList.Add(new Flavour(flavors[i].Trim(), false, 1));
+        }
+
+        Console.Write("Enter ice cream toppings (comma-separated): ");
+        string[] toppings = Console.ReadLine().Split(',');
+
+        List<Topping> toppingList = new List<Topping>();
+        
+        for (int i = 0; i < toppings.Length; i++)
+        {
+            toppingList.Add(new Topping(toppings[i].Trim()));
+        }
+
+        // Create the appropriate ice cream object based on the selected option
+        IceCream iceCream;
+        if (option.ToLower() == "cup")
+        {
+            iceCream = new Cup(option, scoops, flavourList, toppingList);
+
+        }
+        else if (option.ToLower() == "cone")
+        {
+            iceCream = new Cone(option, scoops, flavourList, toppingList, dipped);
+
+        }
+        else if (option.ToLower() == "waffle")
+        {
+            iceCream = new Waffle(option, scoops, flavourList, toppingList, waffleFlavour);
+        }
+        else
+        {
+            Console.WriteLine("Invalid option");
+        }
+
+        newOrder.AddIceCream(iceCream);
+
+        // Link the new order to the customer's current order
+        selectedCustomer.CurrentOrder = newOrder;
+    }
+    else
+    {
+        Console.WriteLine("Customer not found.");
+     }
 }
 
 //Option 5 - Display order details of a customers
