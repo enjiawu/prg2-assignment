@@ -102,7 +102,7 @@ namespace S10256978_PRG2Assignment.Classes
                     string[] line = s.Split(','); 
                     string option = line[0]; 
                     int scoops = Convert.ToInt32(line[1]);               
-                    double cost = Convert.ToDouble(line[3]);
+                    double cost = Convert.ToDouble(line[4]);
 
                     string optionInfo; 
 
@@ -134,7 +134,17 @@ namespace S10256978_PRG2Assignment.Classes
 
         public override string ToString()
         {
-            return $"Option: {Option}\tScoops: {Scoops}\tFlavours: {string.Join(", ", Flavours)}\tToppings: {string.Join(", ", Toppings)}\n";
+            return $"\n------------------------------------\n" +
+                $"Option: {Option}\n" +
+                $"Scoops: {Scoops}\n" +
+                $"Flavours:\n" +
+                $"==========\n" +
+                $"{string.Join("", Flavours)}" +
+                $"==========\n" +
+                $"Toppings:\n" +
+                $"==========\n" +
+                $"{string.Join("", Toppings)}" +
+                $"------------------------------------\n";
         }
     }
 }

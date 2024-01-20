@@ -30,7 +30,7 @@ namespace S10256978_PRG2Assignment.Classes
                 string[] optionInfo = coneOption.Split(','); //splitting option info into option, scoops, waffle flavour and cost
                 if (Scoops == Convert.ToInt32(optionInfo[1]) && Dipped == Convert.ToBoolean(optionInfo[2]))
                 {
-                    optionBasePrice = Convert.ToDouble(optionInfo[2]);
+                    optionBasePrice = Convert.ToDouble(optionInfo[3]);
                     break;
                 }
             }
@@ -41,7 +41,8 @@ namespace S10256978_PRG2Assignment.Classes
 
         public override string ToString()
         {
-            return $"{base.ToString()}\tPrice: {CalculatePrice()}";
+            return $"{base.ToString()}" +
+                $"Price: ${CalculatePrice():f2}";
         }
     }
 }

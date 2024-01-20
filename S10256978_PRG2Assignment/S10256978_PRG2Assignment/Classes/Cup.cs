@@ -34,7 +34,8 @@ namespace S10256978_PRG2Assignment.Classes
         }
         public override string ToString()
         {
-            return $"{base.ToString()}\tPrice: {CalculatePrice()}";
+            return $"{base.ToString()}" +
+                $"Price: ${CalculatePrice():f2}";
         }
     }
 }

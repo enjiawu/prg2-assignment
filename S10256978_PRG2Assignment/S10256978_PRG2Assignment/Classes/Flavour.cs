@@ -24,7 +24,9 @@ namespace S10256978_PRG2Assignment.Classes
 
         public override string ToString()
         {
-            return $"Type: {Type}\tPremium: {Premium}\tQuantity: {Quantity}";
+            return $"Type: {Type,-11}" +
+                $"Premium: {Premium,-10}" +
+                $"Quantity: {Quantity,-5}\n";
         }
     }
 }

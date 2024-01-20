@@ -82,7 +82,7 @@ void ListCurrentOrders(Dictionary<int, Order> regularQueue, Dictionary<int, Orde
 }
 
 // Option 3 - Register new customer
-void RegisterNewCustomer()
+void RegisterNewCustomer(Dictionary<int, Customer> customerList)
 {
     Console.Write("Enter customer name: ");
     string name = Convert.ToString(Console.ReadLine());
@@ -108,13 +108,22 @@ void RegisterNewCustomer()
         }
     }
 
-    Console.Write("Enter customer date of birth (dd/mm/yyyy): ");
     DateTime dob;
-    while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dob))
+    bool isValidDate = false;
+
+    do
     {
-        Console.WriteLine("Invalid date format. Please enter a valid date in the format dd/MM/yyyy.");
         Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
-    }
+        string input = Console.ReadLine();
+
+        isValidDate = DateTime.TryParse(input, out dob);
+
+        if (!isValidDate)
+        {
+            Console.WriteLine("Invalid date format. Please enter a valid date.");
+        }
+
+    } while (!isValidDate);
 
     // Create a new customer object
     Customer newCustomer = new Customer(name, memberId, dob);
@@ -133,12 +142,12 @@ void RegisterNewCustomer()
     AppendCustomerToCsv(newCustomer);
 
     Console.WriteLine("Registration successful!\n");
-    DisplayAllCustomer(customerList);
+    DisplayAllCustomers(customerList);
 }
 
 void AppendCustomerToCsv(Customer customer)
 {
-    using (StreamWriter writer = new StreamWriter("Customers.csv", true))
+    using (StreamWriter writer = new StreamWriter("customers.csv", true))
     {
         writer.WriteLine($"{customer.Name},{customer.MemberId},{customer.Dob.ToString("dd/MM/yyyy")},{customer.Rewards.Tier},{customer.Rewards.Points},{customer.Rewards.PunchCard}");
     }
@@ -380,21 +389,19 @@ void ListOrderDetails(Dictionary<int, Customer> customerList)
         //Retrieving the selected customer
         Customer selectedCustomer = customerList[customerId];
 
-        //Retrieving all the order objects of the customer, past and current
-        InitOrders(customerList);
-
         //Displaying all the details of the order
-        int count = 1;
-        Console.WriteLine("Past Orders");
-        Console.WriteLine("---------------------------------------");
+        Console.WriteLine("\nPast Orders");
+        Console.WriteLine("-------------------------------------------------------------");
 
+        int count = 1;
         foreach (Order order in selectedCustomer.OrderHistory)
         {
             Console.WriteLine(order);
+            count++;
         }
 
         Console.WriteLine("\nCurrent Order");
-        Console.WriteLine("---------------------------------------");
+        Console.WriteLine("-------------------------------------------------------------");
         Console.WriteLine(selectedCustomer.CurrentOrder);
     }
     catch (Exception ex)
@@ -702,11 +709,15 @@ while (true) //While loop that keeps running until customer quits
             Console.WriteLine("-------------------------------------------------\n");
             ListOrderDetails(customerList);
         }
-        else
+        else if (option == 6) 
         {
             Console.WriteLine("\nOption 6 - Modify order details");
             Console.WriteLine("----------------------------------\n");
             ModifyOrder(customerList);
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(); //throwing argument out of range exception
         }
         Console.WriteLine();
     }
