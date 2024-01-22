@@ -19,21 +19,12 @@ namespace S10256978_PRG2Assignment.Classes
         {
             Points = p;
             PunchCard = pc;
-            Tier = "Ordinary"; //Assuming that every customer starts out ordinary
         }
         
         //Methods
         public void AddPoints(int p)
         {
             Points += p;
-            if (Points >= 50)
-            {
-                Tier = "Silver";
-            }
-            else if (Points >= 100)
-            {
-                Tier = "Gold";
-            }
         }
         public void RedeemPoints(int p)
         {
@@ -42,9 +33,9 @@ namespace S10256978_PRG2Assignment.Classes
                 Points -= p;
             }
         }
-        public void Punch()
+        public void Punch() // To keep track of number of punches in point card
         {
-            PunchCard = 0;
+            PunchCard ++; 
         }
 
         public override string ToString()
