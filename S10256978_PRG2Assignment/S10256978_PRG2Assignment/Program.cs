@@ -1,9 +1,12 @@
-﻿using S10256978_PRG2Assignment.Classes;
+﻿//Options
+//==============================================================
+//Enjia: 2,5,6,a(7)
+//Wenya: 1,3,4,b(8)
+//==============================================================
+
+using S10256978_PRG2Assignment.Classes;
 using System.ComponentModel.Design;
 using System.Reflection.Metadata.Ecma335;
-//Options
-//Enjia: 2,5,6, a (advanced)
-//Wenya: 1,3,4, b (advanced)
 void Menu() //Function to display menu
 {
     Console.Write("Ice Cream Shop Management System\n" +
