@@ -1,4 +1,10 @@
-﻿using S10256978_PRG2Assignment.Classes;
+﻿//==========================================================
+// Student Number : S10262410
+// Student Name : Xue Wenya
+// Partner Name : Wu Enjia
+//==========================================================
+
+using S10256978_PRG2Assignment.Classes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
