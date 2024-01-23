@@ -39,22 +39,10 @@ namespace S10256978_PRG2Assignment.Classes
         {
             //Retrieving information of flavours from flavours.csv
             double flavoursPrice = 0.00; //To keep track of the additional price of all flavours
+
             Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
 
-            using (StreamReader sr = new StreamReader("flavours.csv"))
-            {
-                string header = sr.ReadLine(); //Reading header
-                string? s;
-
-                while ((s = sr.ReadLine()) != null)
-                {
-                    string[] line = s.Split(","); //splitting the line into flavour and cost
-                    string flavour = line[0];
-                    double cost = Convert.ToDouble(line[1]);
-
-                    flavourData[flavour] = cost; //Adding flavour and respective cost into flavourData
-                }
-            }
+            Program.InitFlavours(flavourData); //Calling function to initialize flavour data
 
             foreach (Flavour flavour in Flavours) //Calculating costs of all flavours
             {
@@ -69,20 +57,7 @@ namespace S10256978_PRG2Assignment.Classes
             double toppingsPrice = 0.00; //To keep track of the additional price of all toppings
             Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
 
-            using (StreamReader sr = new StreamReader("toppings.csv"))
-            {
-                string header = sr.ReadLine(); //Reading header
-                string? s;
-
-                while ((s = sr.ReadLine()) != null)
-                {
-                    string[] line = s.Split(","); //splitting the line into topping and cost
-                    string topping = line[0];
-                    double cost = Convert.ToDouble(line[1]);
-
-                    toppingData[topping] = cost; //Adding topping and respective cost into toppingsData
-                }
-            }
+            Program.InitToppings(toppingData); //Calling function to initialize toppings data
 
             foreach (Topping topping in Toppings) //Calculating costs of all toppings
             {
