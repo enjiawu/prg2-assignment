@@ -14,41 +14,8 @@ using System.Reflection.Metadata.Ecma335;
 internal class Program
 {
     //Defining methods to be used for different classes and the main program
-    static public void InitFlavours(Dictionary<string, double> flavourData)
-    {
-        using (StreamReader sr = new StreamReader("flavours.csv"))
-        {
-            string header = sr.ReadLine(); //Reading header
-            string? s;
-
-            while ((s = sr.ReadLine()) != null)
-            {
-                string[] line = s.Split(","); //splitting the line into flavour and cost
-                string flavour = line[0];
-                double cost = Convert.ToDouble(line[1]);
-
-                flavourData[flavour] = cost; //Adding flavour and respective cost into flavourData
-            }
-        }
-    }
-    static public void InitToppings(Dictionary<string, double> toppingData)
-    {
-        using (StreamReader sr = new StreamReader("toppings.csv"))
-        {
-            string header = sr.ReadLine(); //Reading header
-            string? s;
-
-            while ((s = sr.ReadLine()) != null)
-            {
-                string[] line = s.Split(","); //splitting the line into topping and cost
-                string topping = line[0];
-                double cost = Convert.ToDouble(line[1]);
-
-                toppingData[topping] = cost; //Adding topping and respective cost into toppingsData
-            }
-        }
-    }
-
+    static public Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
+    static public Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
     private static void Main(string[] args)
     {
         void Menu() //Function to display menu
@@ -65,9 +32,42 @@ internal class Program
                 "Enter option: ");
         }
 
-        Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
-        Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
-        
+        void InitFlavours(Dictionary<string, double> flavourData)
+        {
+            using (StreamReader sr = new StreamReader("flavours.csv"))
+            {
+                string header = sr.ReadLine(); //Reading header
+                string? s;
+
+                while ((s = sr.ReadLine()) != null)
+                {
+                    string[] line = s.Split(","); //splitting the line into flavour and cost
+                    string flavour = line[0];
+                    double cost = Convert.ToDouble(line[1]);
+
+                    flavourData[flavour] = cost; //Adding flavour and respective cost into flavourData
+                }
+            }
+        }
+        void InitToppings(Dictionary<string, double> toppingData)
+        {
+            using (StreamReader sr = new StreamReader("toppings.csv"))
+            {
+                string header = sr.ReadLine(); //Reading header
+                string? s;
+
+                while ((s = sr.ReadLine()) != null)
+                {
+                    string[] line = s.Split(","); //splitting the line into topping and cost
+                    string topping = line[0];
+                    double cost = Convert.ToDouble(line[1]);
+
+                    toppingData[topping] = cost; //Adding topping and respective cost into toppingsData
+                }
+            }
+        }
+
+
         Dictionary<int, Customer> customerDict = new Dictionary<int, Customer>(); //List to keep keep of all the customer details
         void InitCustomers(Dictionary<int, Customer> customerDict)
         {

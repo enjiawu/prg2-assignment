@@ -40,9 +40,7 @@ namespace S10256978_PRG2Assignment.Classes
             //Retrieving information of flavours from flavours.csv
             double flavoursPrice = 0.00; //To keep track of the additional price of all flavours
 
-            Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
-
-            Program.InitFlavours(flavourData); //Calling function to initialize flavour data
+            Dictionary<string, double> flavourData = Program.flavourData; //Dictionary to store information on flavour and respective cost
 
             foreach (Flavour flavour in Flavours) //Calculating costs of all flavours
             {
@@ -55,9 +53,8 @@ namespace S10256978_PRG2Assignment.Classes
         {
             //Retrieving information of flavours from toppings.csv
             double toppingsPrice = 0.00; //To keep track of the additional price of all toppings
-            Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
 
-            Program.InitToppings(toppingData); //Calling function to initialize toppings data
+            Dictionary<string, double> toppingData = Program.toppingData; //Dictionary to store information on toppings and respective cost
 
             foreach (Topping topping in Toppings) //Calculating costs of all toppings
             {

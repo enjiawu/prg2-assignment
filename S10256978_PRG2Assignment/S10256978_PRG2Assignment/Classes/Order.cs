@@ -34,10 +34,8 @@ namespace S10256978_PRG2Assignment.Classes
         //Methods
         public void ModifyIceCream(int i) 
         {
-            Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
-            Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
-            Program.InitFlavours(flavourData); //Calling function to initialize flavour data
-            Program.InitToppings(toppingData); //Calling function to initialize toppings data
+            Dictionary<string, double> flavourData = Program.flavourData; //Dictionary to store information on flavour and respective cost
+            Dictionary<string, double> toppingData = Program.toppingData; //Dictionary to store information on toppings and respective cost
 
             void ChangeFlavours(IceCream ic) //Function to add flavours
             {
