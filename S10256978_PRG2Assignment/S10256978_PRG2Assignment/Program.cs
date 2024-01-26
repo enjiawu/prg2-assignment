@@ -244,8 +244,8 @@ internal class Program
 
             while (true)
             {
-                CreateOrder(customerDict);
-                //AddNewIceCream();
+                //CreateOrder(customerDict);
+                AddNewIceCream(newOrder);
 
 
 
@@ -280,13 +280,13 @@ internal class Program
             }
 
 
+
             // Link the new order to the customer's current order
             if (customerDict.TryGetValue(memberId, out var selectedCustomer))
             {
                 selectedCustomer.CurrentOrder = newOrder;
             }
 
-            newOrder.TimeFulfilled = DateTime.Now;
 
             // Determine the Pointcard tier and append the order to the appropriate queue
             if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
@@ -305,7 +305,7 @@ internal class Program
             Console.WriteLine($"Order ID: {newOrder.Id}");
             Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
 
-
+            // Print ice cream details
             foreach (var iceCream in newOrder.IceCreamList)
             {
                 Console.WriteLine($"Ice Cream: {iceCream}");
