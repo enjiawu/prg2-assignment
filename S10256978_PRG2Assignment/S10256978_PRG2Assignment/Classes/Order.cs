@@ -300,6 +300,7 @@ namespace S10256978_PRG2Assignment.Classes
                     {
                         Console.WriteLine($"{t}");
                     }
+                    Console.WriteLine("Enter -1 to remove all toppings\n");
 
                     string toppingOption = " ";
                     while (true) //Data validation for topping input
@@ -313,6 +314,10 @@ namespace S10256978_PRG2Assignment.Classes
                             if (toppingOption == "0")
                             {
                                 noToppingUpdate = true; //change no topping update to true
+                                break;
+                            }
+                            else if (toppingOption == "-1")
+                            {
                                 break;
                             }
                             else if (toppingData.ContainsKey(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()) || toppingOption == "0") //Checking if topping exists
@@ -336,7 +341,12 @@ namespace S10256978_PRG2Assignment.Classes
 
                     if (toppingOption == "0")
                     {
-                        break;
+                        break; //breaking from loop
+                    }
+                    else if (toppingOption == "-1")
+                    {
+                        toppings.Clear(); //Clearing all toppings
+                        break; //breaking from loop
                     }
 
                     Topping newTopping = new Topping(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()); //Making new topping
@@ -530,6 +540,7 @@ namespace S10256978_PRG2Assignment.Classes
                 {
                     Console.WriteLine("No changes have been made.");
                 }
+                break;
             }
         }
         public void AddIceCream(IceCream ic)
@@ -555,7 +566,7 @@ namespace S10256978_PRG2Assignment.Classes
             string icecreams = "";
             foreach (IceCream ic in IceCreamList)
             {
-                icecreams += ic + "\n";
+                icecreams += ic;
             }
             return $"Order ID: {Id}\n" +
                 $"Time Received: {TimeReceived}\n" +

@@ -34,10 +34,7 @@ namespace S10256978_PRG2Assignment.Classes
         }
         public void RedeemPoints(int p)
         {
-            if (Points >= p && (Tier == "Silver" || Tier == "Gold"))
-            {
-                Points -= p;
-            }
+            Points -= p;
         }
         public void Punch() // To keep track of number of punches in point card
         {

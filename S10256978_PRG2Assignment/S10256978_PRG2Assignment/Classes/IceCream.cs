@@ -115,8 +115,8 @@ namespace S10256978_PRG2Assignment.Classes
             return $"\n------------------------------------\n" +
                 $"Option: {Option}\n" +
                 $"Scoops: {Scoops}\n" +
-                $"Flavours:\n" +
                 $"==========\n" +
+                $"Flavours:\n" +
                 $"{string.Join("", Flavours)}" +
                 $"==========\n" +
                 $"Toppings:\n" +

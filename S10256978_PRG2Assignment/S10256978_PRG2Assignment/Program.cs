@@ -16,10 +16,6 @@ internal class Program
     //Defining methods to be used for different classes and the main program
     public static Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
     public static Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
-
-    // Queue to store information on gold oder and regular order
-    private static Queue<Order> goldOrderQueue = new Queue<Order>();
-    private static Queue<Order> regularOrderQueue = new Queue<Order>();
     private static void Main(string[] args)
     {
         void Menu() //Function to display menu
@@ -32,6 +28,7 @@ internal class Program
                 "[4] Create a customer's order\n" +
                 "[5] Display order details of a customer\n" +
                 "[6] Modify order details\n" +
+                "[7] Process an order and checkout\n" +
                 "[0] Quit\n" +
                 "Enter option: ");
         }
@@ -285,12 +282,12 @@ internal class Program
             // Determine the Pointcard tier and append the order to the appropriate queue
             if (selectedCustomer.Rewards != null && (selectedCustomer.Rewards.Tier == "Silver" || selectedCustomer.Rewards.Tier == "Gold"))
             {
-                goldOrderQueue.Enqueue(newOrder);
+                goldMembersQueue.Enqueue(newOrder);
                 Console.WriteLine("Order added to Gold Member Queue.");
             }
             else
             {
-                regularOrderQueue.Enqueue(newOrder);
+                regularQueue.Enqueue(newOrder);
                 Console.WriteLine("Order added to Regular Queue.");
             }
         
@@ -654,7 +651,7 @@ internal class Program
         //Option 6 - Modifying order details
         void ModifyIceCream(Order currentOrder) //Method to mofidy ice cream
         {
-            Console.WriteLine("Choose an existing ice cream to modify");
+            Console.WriteLine("\nChoose an existing ice cream to modify");
             Console.WriteLine("---------------------------------------");
             while (true)
             {
@@ -1197,7 +1194,6 @@ internal class Program
 
 
         //Advanced feature a - Process an order and checkout
-        /*
         void ProcessCheckoutOrder()
         {
             Order order; //Order to be checked out
@@ -1216,19 +1212,19 @@ internal class Program
             double mostExIceCreamPrice = 0.00;
             foreach (IceCream ic in order.IceCreamList)
             {
-                Console.WriteLine($"Ice Cream [{count}]\n" +
-                    $"------------------------\n" +
-                    $"{ic}");
+                Console.WriteLine($"Ice Cream [{count}]" +
+                    $"{ic}\n");
 
-                if (ic.CalculatePrice() > mostExIceCreamPrice) //Checking if ice cream is msot expensive in the order
+                if (ic.CalculatePrice() > mostExIceCreamPrice) //Checking if ice cream is most expensive in the order
                 {
                     mostExIceCreamPrice = ic.CalculatePrice(); 
                 }
+                count++;
             }
 
             //Displaying the total bill amount
             double orderTotal = order.CalculateTotal();
-            Console.WriteLine($"Total bill amount: ${orderTotal}");
+            Console.WriteLine($"\nTotal bill amount: ${orderTotal:f2}");
 
             //Finding customer 
             Customer customer = new Customer();
@@ -1240,7 +1236,7 @@ internal class Program
                     break;
                 }
             }
-
+            Console.WriteLine(customer.Rewards);
             //Displaying the membership status & points of the customer
             Console.WriteLine($"Membership status: {customer.Rewards.Tier}\n" +
                 $"Points: {customer.Rewards.Points}");
@@ -1267,14 +1263,26 @@ internal class Program
                 {
                     try
                     {
-                        Console.WriteLine($"Customer [{customer.MemberId}] has {customer.Rewards.Points} to redeem.");
+                        Console.WriteLine($"\nCustomer [{customer.MemberId}] has {customer.Rewards.Points} points to redeem.");
                         Console.Write("Number of points to redeem (1 point = $0.02) : ");
                         int pointsToRedeem = Convert.ToInt32(Console.ReadLine());
 
                         if (pointsToRedeem <= customer.Rewards.Points) //Check if customer has sufficient points
                         {
-                            customer.Rewards.RedeemPoints(pointsToRedeem);
-                            orderTotal -= customer.Rewards.Points * 0.02; //Redeeming customers points (1 point = $0.02)
+                            if ((pointsToRedeem * 0.02) > orderTotal) //Check if the pointsToRedeem price exceeds the order total
+                            {
+                                int newPointsToRedeem = Convert.ToInt32(Math.Ceiling(orderTotal / 0.02)); //Points to redeem after offsetting the leftover points
+                                int leftoverPoints = pointsToRedeem - newPointsToRedeem;
+                                orderTotal -= newPointsToRedeem * 0.02; //Redeeming customers points (1 point = $0.02)
+                                customer.Rewards.RedeemPoints(newPointsToRedeem);
+                                Console.WriteLine($"{newPointsToRedeem} points used. Customer [{customer.MemberId}] has {leftoverPoints} left.");
+                            }
+                            else
+                            {
+                                customer.Rewards.RedeemPoints(pointsToRedeem);
+                                orderTotal -= pointsToRedeem * 0.02; //Redeeming customers points (1 point = $0.02)
+                                Console.WriteLine($"{pointsToRedeem} points [${pointsToRedeem * 0.02:f2}] have been redeemed. Customer [{customer.MemberId}] has {customer.Rewards.Points} left.");
+                            }
                         }
                         else
                         {
@@ -1303,10 +1311,11 @@ internal class Program
             }
 
             //Displaying final bill amount
-            Console.WriteLine($"Final bill amount: {orderTotal}");
+            Console.WriteLine($"Final bill amount: ${orderTotal:f2}");
 
             //Prompting user any key to make payment
             Console.Write("Enter any key to make payment: ");
+            Console.ReadLine();
 
             //Incrementing punch card for every ice cream in the order
             foreach (IceCream ic in order.IceCreamList)
@@ -1340,14 +1349,63 @@ internal class Program
             customer.OrderHistory.Add(order);
 
             //Updating orders.csv
-            using (StreamWriter writer = new StreamWriter("order.csv", true))
+            using (StreamWriter writer = new StreamWriter("orders.csv", true))
             {
                 foreach (IceCream ic in order.IceCreamList)
                 {
-                    writer.WriteLine($"{order.Id},{customer.MemberId},{order.TimeReceived},{order.TimeFulfilled},{ic.Option},{ic.Scoops},{},{},{},{},{},{},{},{},{}");
+                    //Checking if ice cream is a cone
+                    string dipped = "";
+                    if (ic is Cone)
+                    {
+                        Cone cone = (Cone)ic; //Need to downcast to access cone properties
+                        dipped = cone.Dipped.ToString().ToUpper(); //Assigning dipped boolean as a upper case string 
+                    }
+
+                    //Checking if ice cream is a waffle
+                    string waffleFlavour = ""; 
+                    if (ic is Waffle)
+                    {
+                        Waffle waffle = (Waffle)ic; //Need to downcast to access waffle properties
+                        waffleFlavour = waffle.WaffleFlavour; //Assigning waffle flavour to waffleFlavour
+                    }
+
+                    //Formatting all the flavours neatly
+                    string flavours = "";
+                    int flavourCount = 0; //keep track of how many flavours have been added
+                    foreach (Flavour f in ic.Flavours)
+                    {
+                        flavours += $"{f.Type},"; //stringing it together
+                        flavourCount++; //icnrement flavour count by 1
+                    }
+                    if (flavourCount < 3)
+                    {
+                        for (int i = 0; i < (3 - flavourCount); i++)
+                        {
+                            flavours += ",";
+                        }
+                    }
+
+                    //Formatting all the toppings neatly
+                    string toppings = "";
+                    int toppingCount = 0; //keep track of how many toppings have been added
+                    foreach (Topping t in ic.Toppings)
+                    {
+                        toppings += $"{t.Type},"; //stringing it together
+                        toppingCount++; //increment flavour count by 1
+                    }
+                    if (toppingCount < 3)
+                    {
+                        for (int i = 0; i < (3 - toppingCount); i++)
+                        {
+                            toppings += ",";
+                        }
+                    }
+
+                    writer.WriteLine($"{order.Id},{customer.MemberId},{order.TimeReceived},{order.TimeFulfilled},{ic.Option},{ic.Scoops},{dipped},{waffleFlavour},{flavours}{toppings}");
                 }
             }
-        }*/
+            Console.WriteLine(customer.Rewards);
+        }
 
         //Main Program
         InitFlavours(flavourData); //Reading data from flavours.csv
@@ -1395,23 +1453,29 @@ internal class Program
                     Console.WriteLine("----------------------------------\n");
                     RegisterNewCustomer(customerDict);
                 }
-                else if (option == 4)
+                else if (option == 4) //Option 4 - Create a customer's order
                 {
                     Console.WriteLine("\nOption 4 - Create a customer's order");
                     Console.WriteLine("----------------------------------");
                     CreateCustomerOrder(customerDict);
                 }
-                else if (option == 5)
+                else if (option == 5) //Option 5 - Display the details of a customer
                 {
                     Console.WriteLine("\nOption 5 - Display order details of a customer");
                     Console.WriteLine("-------------------------------------------------\n");
                     ListOrderDetails(customerDict);
                 }
-                else if (option == 6)
+                else if (option == 6) //Option 6 - Modify order details
                 {
                     Console.WriteLine("\nOption 6 - Modify order details");
                     Console.WriteLine("----------------------------------");
                     ModifyOrder(customerDict);
+                }
+                else if (option == 7) //Option 7 - Process an order and checkout (Advanced feature - a)
+                {
+                    Console.WriteLine("\nOption 7 - Process an order and checkout");
+                    Console.WriteLine("--------------------------------------------");
+                    ProcessCheckoutOrder();
                 }
                 else
                 {
@@ -1432,5 +1496,6 @@ internal class Program
                 Console.WriteLine($"\n{ex.Message}\n");
             }
         }
+        Console.WriteLine();
     }
 }
