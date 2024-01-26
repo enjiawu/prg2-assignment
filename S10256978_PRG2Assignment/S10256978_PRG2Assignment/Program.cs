@@ -305,7 +305,7 @@ internal class Program
             Console.WriteLine($"Order ID: {newOrder.Id}");
             Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
 
-            // Print ice cream details
+
             foreach (var iceCream in newOrder.IceCreamList)
             {
                 Console.WriteLine($"Ice Cream: {iceCream}");
