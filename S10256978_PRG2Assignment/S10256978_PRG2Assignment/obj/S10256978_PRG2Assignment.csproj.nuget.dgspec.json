@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\WEN YA\\Source\\Repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {}
+    "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {}
   },
   "projects": {
-    "C:\\Users\\WEN YA\\Source\\Repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {
+    "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\WEN YA\\Source\\Repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
+        "projectUniqueName": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
         "projectName": "S10256978_PRG2Assignment",
-        "projectPath": "C:\\Users\\WEN YA\\Source\\Repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
+        "projectPath": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
         "packagesPath": "C:\\Users\\WEN YA\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\WEN YA\\Source\\Repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\obj\\",
+        "outputPath": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\WEN YA\\AppData\\Roaming\\NuGet\\NuGet.Config",

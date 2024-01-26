@@ -139,65 +139,79 @@ internal class Program
         // Option 3 - Register new customer
         void RegisterNewCustomer(Dictionary<int, Customer> customerDict)
         {
-            Console.Write("Enter customer name: ");
-            string name = Convert.ToString(Console.ReadLine());
-
-            int memberId;
-            while (true)
+            try
             {
-                Console.Write("Enter customer ID number: ");
-                if (int.TryParse(Console.ReadLine(), out memberId))
+                Console.Write("Enter customer name: ");
+                string name = Convert.ToString(Console.ReadLine());
+
+                int memberId;
+                while (true)
                 {
-                    if (customerDict.ContainsKey(memberId))
+                    Console.Write("Enter customer ID number: ");
+                    if (int.TryParse(Console.ReadLine(), out memberId))
                     {
-                        Console.WriteLine($"Customer ID {memberId} already exists. Please choose a different ID.");
+                        if (customerDict.ContainsKey(memberId))
+                        {
+                            Console.WriteLine($"Customer ID {memberId} already exists. Please choose a different ID.");
+                        }
+                        else
+                        {
+                            break; // Exit the loop if the ID is valid and not already in use
+                        }
                     }
                     else
                     {
-                        break; // Exit the loop if the ID is valid and not already in use
+                        Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
                     }
                 }
-                else
+
+                DateTime dob;
+                bool isValidDate = false;
+
+                do
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
-                }
+                    Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
+                    string input = Console.ReadLine();
+
+                    isValidDate = DateTime.TryParse(input, out dob);
+
+                    if (!isValidDate)
+                    {
+                        Console.WriteLine("Invalid date format. Please enter a valid date.");
+                    }
+
+                } while (!isValidDate);
+
+                // Create a new customer object
+                Customer newCustomer = new Customer(name, memberId, dob);
+
+                // Create a new PointCard object
+                PointCard newPointCard = new PointCard();
+                newCustomer.Rewards = newPointCard;
+
+                // Set the initial Tier to "Ordinary"
+                newPointCard.Tier = "Ordinary";
+
+                // Add the new customer to the dictionary
+                customerDict.Add(memberId, newCustomer);
+
+                // Append the customer information to the CSV file
+                AppendCustomerToCsv(newCustomer);
+
+                Console.WriteLine("Registration successful!\n");
+                DisplayAllCustomers(customerDict);
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine("Invalid input format. Please ensure you enter data in the correct format.");
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An unexpected error occurred:");
+                Console.WriteLine(ex.Message);
             }
 
-            DateTime dob;
-            bool isValidDate = false;
-
-            do
-            {
-                Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
-                string input = Console.ReadLine();
-
-                isValidDate = DateTime.TryParse(input, out dob);
-
-                if (!isValidDate)
-                {
-                    Console.WriteLine("Invalid date format. Please enter a valid date.");
-                }
-
-            } while (!isValidDate);
-
-            // Create a new customer object
-            Customer newCustomer = new Customer(name, memberId, dob);
-
-            // Create a new PointCard object
-            PointCard newPointCard = new PointCard();
-            newCustomer.Rewards = newPointCard;
-
-            // Set the initial Tier to "Ordinary"
-            newPointCard.Tier = "Ordinary";
-
-            // Add the new customer to the dictionary
-            customerDict.Add(memberId, newCustomer);
-
-            // Append the customer information to the CSV file
-            AppendCustomerToCsv(newCustomer);
-
-            Console.WriteLine("Registration successful!\n");
-            DisplayAllCustomers(customerDict);
         }
 
         void AppendCustomerToCsv(Customer customer)
@@ -211,291 +225,134 @@ internal class Program
         // Option 4 - Create customer order
         void CreateCustomerOrder(Dictionary<int, Customer> customerDict)
         {
-            // Display available customers
-            Console.WriteLine("\nSelect a customer by entering their Member ID:");
-            foreach (var kvp in customerDict)
+            try
             {
-                Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
-            }
+                // Display available customers
+                Console.WriteLine("\nSelect a customer by entering their Member ID:");
+                foreach (var kvp in customerDict)
+                {
+                    Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
+                }
 
-            // Create a new order for the selected customer
-            Order newOrder = new Order();
+                // Create a new order for the selected customer
+                Order newOrder = new Order();
 
-            // Get member id
-            Console.Write("\nEnter Member ID: ");
-            int memberId;
-            while (!int.TryParse(Console.ReadLine(), out memberId) || !customerDict.ContainsKey(memberId))
-            {
-                // Validate the entered ID
-                Console.WriteLine("Invalid Member ID. Please enter a valid Member ID.");
-                Console.Write("Enter Member ID: ");
-            }
-
-
-            // Get an order ID for customer
-            Console.Write("\nEnter order ID: ");
-            int orderId = Convert.ToInt32(Console.ReadLine());
-            newOrder.Id = orderId;
-
-            // Set the current time as the received time for the order
-            DateTime timeReceived = DateTime.Now;
-            newOrder.TimeReceived = timeReceived;
+                // Get member id
+                Console.Write("\nEnter Member ID: ");
+                int memberId;
+                while (!int.TryParse(Console.ReadLine(), out memberId) || !customerDict.ContainsKey(memberId))
+                {
+                    // Validate the entered ID
+                    Console.WriteLine("Invalid Member ID. Please enter a valid Member ID.");
+                    Console.Write("Enter Member ID: ");
+                }
 
 
-            while (true)
-            {
-                //CreateOrder(customerDict);
-                AddNewIceCream(newOrder);
+                // Get an order ID for customer
+                Console.Write("\nEnter order ID: ");
+                int orderId = Convert.ToInt32(Console.ReadLine());
+                newOrder.Id = orderId;
+
+                // Set the current time as the received time for the order
+                DateTime timeReceived = DateTime.Now;
+                newOrder.TimeReceived = timeReceived;
 
 
-
-                // prompt user if they want to add another icecream
-                string addAnotherIcecream;
                 while (true)
                 {
-                    Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
-                    addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
-                    if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
+                    try
                     {
-                        Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                        AddNewIceCream(newOrder);
                     }
-                    else
+                    catch (Exception ex)
                     {
+                        // Handle the error appropriately, e.g., prompt for retry or exit
+                        Console.WriteLine("Error adding ice cream:");
+                        Console.WriteLine(ex.Message);
+                    }
+
+                    // prompt user if they want to add another icecream
+                    string addAnotherIcecream;
+                    while (true)
+                    {
+                        Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
+                        addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
+                        if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
+                        {
+                            Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (addAnotherIcecream == "Y")
+                    {
+                        Console.WriteLine("You choose to add another ice cream.\n");
+                        // Continue the loop to add another ice cream
+                    }
+                    else if (addAnotherIcecream == "N")
+                    {
+                        // Break out of the loop
                         break;
                     }
-                }
 
-                if (addAnotherIcecream == "Y")
-                {
-                    Console.WriteLine("You choose to add another ice cream.\n");
-                    // Continue the loop to add another ice cream
-                }
-                else if (addAnotherIcecream == "N")
-                {
-                    // Break out of the loop
-                    break;
+
                 }
 
 
-            }
 
-
-
-            // Link the new order to the customer's current order
-            if (customerDict.TryGetValue(memberId, out var selectedCustomer))
-            {
-                selectedCustomer.CurrentOrder = newOrder;
-            }
-
-
-            // Determine the Pointcard tier and append the order to the appropriate queue
-            if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
-            {
-                goldMembersQueue.Enqueue(newOrder);
-                Console.WriteLine("Order added to Gold Member Queue.");
-            }
-            else
-            {
-                regularQueue.Enqueue(newOrder);
-                Console.WriteLine("Order added to Regular Queue.");
-            }
-
-            // Display order details directly in CreateCustomerOrder
-            Console.WriteLine("Order Details:");
-            Console.WriteLine($"Order ID: {newOrder.Id}");
-            Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
-
-            // Print ice cream details
-            foreach (var iceCream in newOrder.IceCreamList)
-            {
-                Console.WriteLine($"Ice Cream: {iceCream}");
-            }
-
-            Console.WriteLine("Order made successfully!\n");
-
-            Console.WriteLine(newOrder.ToString());
-            foreach (Order order in regularQueue)
-            {
-                Console.WriteLine($"{order}");
-            }
-            foreach (Order order in goldMembersQueue)
-            {
-                Console.WriteLine($"{order}");
-            }
-        }
-
-
-        // Create icecream order
-        void CreateOrder(Dictionary<int, Customer> customerDict)
-        {
-            Order newOrder = new Order();
-            // Get ice cream option from the user
-            Console.Write("\nAvailiable ice cream option:" +
-                "\n[1] Cup" +
-                "\n[2] Cone" +
-                "\n[3] Waffle" +
-                "\nEnter ice cream option: ");
-
-            string option;
-            while (true)
-            {
-                option = Convert.ToString(Console.ReadLine());
-                if (option != null && (option.ToLower() == "cup" || option.ToLower() == "cone" || option.ToLower() == "waffle"))
+                // Link the new order to the customer's current order
+                if (customerDict.TryGetValue(memberId, out var selectedCustomer))
                 {
-                    // Validate the entered ice cream option
-                    Console.WriteLine($"You selected {option}\n");
-                    break;
+                    selectedCustomer.CurrentOrder = newOrder;
+                }
+
+
+                // Determine the Pointcard tier and append the order to the appropriate queue
+                if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
+                {
+                    goldMembersQueue.Enqueue(newOrder);
+                    Console.WriteLine("Order added to Gold Member Queue.");
                 }
                 else
                 {
-                    Console.WriteLine("Invalid option. Please enter either 'Cup', 'Cone', or 'Waffle'.");
-                    Console.Write("Enter ice cream option (Cup/Cone/Waffle): ");
+                    regularQueue.Enqueue(newOrder);
+                    Console.WriteLine("Order added to Regular Queue.");
                 }
-            }
 
-            // Get the number of scoops from user
-            int scoops;
-            while (true)
-            {
-                Console.Write("Enter number of scoops (1, 2, or 3): ");
-                if (int.TryParse(Console.ReadLine(), out scoops) && scoops >= 1 && scoops <= 3)
+                // Display order details directly in CreateCustomerOrder
+                Console.WriteLine("Order Details:");
+                Console.WriteLine($"Order ID: {newOrder.Id}");
+                Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
+
+                // Print ice cream details
+                foreach (var iceCream in newOrder.IceCreamList)
                 {
-                    Console.WriteLine($"You choose to have {scoops} scoops\n");
-                    break;
+                    Console.WriteLine($"Ice Cream: {iceCream}");
                 }
-                else
+
+                Console.WriteLine("Order made successfully!\n");
+
+                Console.WriteLine(newOrder.ToString());
+                foreach (Order order in regularQueue)
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid number of scoops (1, 2, or 3).");
+                    Console.WriteLine($"{order}");
                 }
-            }
-
-            // Check if the option is a cone and prompt user for upgrade to dipped
-            bool dipped = false;
-            string waffleFlavour = "";
-            if (option.ToLower() == "cone")
-            {
-                while (true)
+                foreach (Order order in goldMembersQueue)
                 {
-                    Console.Write("Upgrade to chocolate-dipped cone? (Y/N): ");
-                    string upgradeInput = Console.ReadLine()?.ToUpper();
-
-                    if (upgradeInput == "Y")
-                    {
-                        dipped = true;
-                        Console.WriteLine("You have upgraded to a chocolate-dipped cone.\n");
-                        break;
-                    }
-                    else if (upgradeInput == "N")
-                    {
-                        dipped = false;
-                        Console.WriteLine("You have chosen a regular cone.\n");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input. Please enter 'Y' for Yes or 'N' for No.");
-                    }
+                    Console.WriteLine($"{order}");
                 }
             }
-            else if (option.ToLower() == "waffle")
+            catch (Exception ex)
             {
-                // Get the waffle flavor from user
-                Console.Write("Choose waffle flavor (Original/Red Velvet/Charcoal/Pandan): ");
-                while (true)
-                {
-                    waffleFlavour = Convert.ToString(Console.ReadLine());
-                    if (waffleFlavour != null && (waffleFlavour.ToLower() == "original" || waffleFlavour.ToLower() == "red velvet" || waffleFlavour.ToLower() == "charcoal" || waffleFlavour.ToLower() == "pandan"))
-                    {
-                        Console.WriteLine($"You selected {waffleFlavour} as your waffle flavour");
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid waffle flavor. Please choose from 'Red Velvet', 'Charcoal', or 'Pandan'.");
-                        Console.Write("Choose waffle flavor (Original/Red Velvet/Charcoal/Pandan): ");
-                    }
-                }
-            }
-
-
-            // Display the available ice cream flavour
-            Console.WriteLine("Available ice cream flavours:" +
-                "\n[1] Vanilla" +
-                "\n[2] Chocolate" +
-                "\n[3] Strawberry" +
-                "\n[4] Durian" +
-                "\n[5] Ube" +
-                "\n[6] Sea Salt");
-
-            List<Flavour> flavourList = new List<Flavour>();
-
-            for (int i = 1; i <= scoops; i++)
-            {
-                Console.Write($"Enter flavour for scoop #{i}: ");
-                string selectedFlavor = Console.ReadLine()?.Trim();
-
-                // Validate user input against available flavors
-                while (!(selectedFlavor == "vanilla" || selectedFlavor == "chocolate" || selectedFlavor == "strawberry" || selectedFlavor == "durian" || selectedFlavor == "Ube" || selectedFlavor == "sea salt"))
-                {
-                    Console.WriteLine($"Invalid ice cream flavor: {selectedFlavor}. Please choose from the available options.");
-                    Console.Write($"Enter flavour for scoop #{i}: ");
-                    selectedFlavor = Console.ReadLine()?.Trim().ToLower();
-                }
-
-                flavourList.Add(new Flavour(selectedFlavor, false, i));
-            }
-
-            // Display the available ice cream toppings
-            Console.WriteLine("\nAvailable ice cream toppings:" +
-                "\n[1] Sprinkles" +
-                "\n[2] Mochi" +
-                "\n[3] Sago" +
-                "\n[4] Oreos");
-
-            List<Topping> toppingList = new List<Topping>();
-
-            for (int i = 1; i <= 4; i++)
-            {
-                Console.Write($"Enter topping for scoop #{i}: ");
-                string selectedTopping = Console.ReadLine()?.Trim();
-
-                // Validate user input against available toppings
-                while (!(selectedTopping == "sprinkles" || selectedTopping == "mochi" || selectedTopping == "Sago" || selectedTopping == "oreos"))
-                {
-                    Console.WriteLine($"Invalid ice cream topping: {selectedTopping}. Please choose from the available options.");
-                    Console.Write($"Enter topping for scoop #{i}: ");
-                    selectedTopping = Console.ReadLine()?.Trim().ToLower();
-                }
-
-                toppingList.Add(new Topping(selectedTopping));
-            }
-
-            // Create the appropriate ice cream object based on the selected option
-            IceCream iceCream = null;
-            if (option.ToLower() == "cup")
-            {
-                iceCream = new Cup(option, scoops, flavourList, toppingList);
-
-            }
-            else if (option.ToLower() == "cone")
-            {
-                iceCream = new Cone(option, scoops, flavourList, toppingList, dipped);
-
-            }
-            else if (option.ToLower() == "waffle")
-            {
-                iceCream = new Waffle(option, scoops, flavourList, toppingList, waffleFlavour);
-            }
-            else
-            {
-                Console.WriteLine("Invalid option");
-            }
-
-            if (iceCream != null)
-            {
-                newOrder.AddIceCream(iceCream);
+                // Log the exception for debugging or troubleshooting
+                Console.WriteLine("An unexpected error occurred:");
+                Console.WriteLine(ex.Message);
             }
         }
+
 
         //Option 5 - Display order details of a customers
         Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order
@@ -709,7 +566,7 @@ internal class Program
                     Console.WriteLine("Please only enter the number of the ice cream in the order!");
                 }
             }
-           
+
         }
 
         void AddNewIceCream(Order currentOrder) //Method to add new ice cream
@@ -1166,7 +1023,7 @@ internal class Program
                                 }
                                 else if (option == 3)
                                 {
-                                     DeleteIceCream(currentOrder); //Call delete ice cream function
+                                    DeleteIceCream(currentOrder); //Call delete ice cream function
                                 }
                                 else
                                 {
@@ -1211,7 +1068,7 @@ internal class Program
                     Console.WriteLine("Please a valid MemberID");
                 }
             }
-           
+
         }
 
 
@@ -1222,7 +1079,7 @@ internal class Program
             //Dequeue the first order in the queue
             if (goldMembersQueue.Count > 0) //Check if gold members queue has any orders
             {
-                order = goldMembersQueue.Dequeue(); 
+                order = goldMembersQueue.Dequeue();
             }
             else
             {
@@ -1239,7 +1096,7 @@ internal class Program
 
                 if (ic.CalculatePrice() > mostExIceCreamPrice) //Checking if ice cream is most expensive in the order
                 {
-                    mostExIceCreamPrice = ic.CalculatePrice(); 
+                    mostExIceCreamPrice = ic.CalculatePrice();
                 }
                 count++;
             }
@@ -1250,7 +1107,7 @@ internal class Program
 
             //Finding customer 
             Customer customer = new Customer();
-            foreach(Customer c in customerDict.Values) //Iterating through customerDict
+            foreach (Customer c in customerDict.Values) //Iterating through customerDict
             {
                 if (c.CurrentOrder.Id == order.Id) //Checking if customer's current order id is the same as the checkout order id
                 {
@@ -1384,7 +1241,7 @@ internal class Program
                     }
 
                     //Checking if ice cream is a waffle
-                    string waffleFlavour = ""; 
+                    string waffleFlavour = "";
                     if (ic is Waffle)
                     {
                         Waffle waffle = (Waffle)ic; //Need to downcast to access waffle properties
