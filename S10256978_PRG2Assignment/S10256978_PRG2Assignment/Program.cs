@@ -9,6 +9,7 @@ using S10256978_PRG2Assignment.Classes;
 using System.ComponentModel.Design;
 using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 internal class Program
@@ -82,7 +83,8 @@ internal class Program
                     string[] line = s.Split(',');
                     string Name = line[0];
                     int MemberId = Convert.ToInt32(line[1]);
-                    DateTime Dob = Convert.ToDateTime(line[2]);
+                    DateTime Dob = DateTime.ParseExact(line[2], "dd/MM/yyyy", CultureInfo.InvariantCulture);
+                    //DateTime Dob = Convert.ToDateTime(line[2]);
                     string MemberShipStatus = line[3];
                     int MemberShipPoint = Convert.ToInt32(line[4]);
                     int PunchCard = Convert.ToInt32(line[5]);
@@ -233,6 +235,7 @@ internal class Program
             // Get an order ID for customer
             Console.Write("\nEnter order ID: ");
             int orderId = Convert.ToInt32(Console.ReadLine());
+            newOrder.Id = orderId;
 
             // Set the current time as the received time for the order
             DateTime timeReceived = DateTime.Now;
@@ -241,8 +244,11 @@ internal class Program
 
             while (true)
             {
-                CreateOrder();
-                
+                CreateOrder(customerDict);
+                //AddNewIceCream();
+
+
+
                 // prompt user if they want to add another icecream
                 string addAnotherIcecream;
                 while (true)
@@ -270,17 +276,20 @@ internal class Program
                     break;
                 }
 
-        
+
             }
 
+
             // Link the new order to the customer's current order
-             if (customerDict.TryGetValue(memberId, out var selectedCustomer))
+            if (customerDict.TryGetValue(memberId, out var selectedCustomer))
             {
                 selectedCustomer.CurrentOrder = newOrder;
             }
 
+            newOrder.TimeFulfilled = DateTime.Now;
+
             // Determine the Pointcard tier and append the order to the appropriate queue
-            if (selectedCustomer.Rewards != null && (selectedCustomer.Rewards.Tier == "Silver" || selectedCustomer.Rewards.Tier == "Gold"))
+            if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
             {
                 goldMembersQueue.Enqueue(newOrder);
                 Console.WriteLine("Order added to Gold Member Queue.");
@@ -290,12 +299,12 @@ internal class Program
                 regularQueue.Enqueue(newOrder);
                 Console.WriteLine("Order added to Regular Queue.");
             }
-        
+
             // Display order details directly in CreateCustomerOrder
             Console.WriteLine("Order Details:");
             Console.WriteLine($"Order ID: {newOrder.Id}");
             Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
-        
+
             // Print ice cream details
             foreach (var iceCream in newOrder.IceCreamList)
             {
@@ -303,11 +312,21 @@ internal class Program
             }
 
             Console.WriteLine("Order made successfully!\n");
+
+            Console.WriteLine(newOrder.ToString());
+            foreach (Order order in regularQueue)
+            {
+                Console.WriteLine($"{order}");
+            }
+            foreach (Order order in goldMembersQueue)
+            {
+                Console.WriteLine($"{order}");
+            }
         }
-        
-        
+
+
         // Create icecream order
-        void CreateOrder()
+        void CreateOrder(Dictionary<int, Customer> customerDict)
         {
             Order newOrder = new Order();
             // Get ice cream option from the user
@@ -333,7 +352,7 @@ internal class Program
                     Console.Write("Enter ice cream option (Cup/Cone/Waffle): ");
                 }
             }
-        
+
             // Get the number of scoops from user
             int scoops;
             while (true)
@@ -349,7 +368,7 @@ internal class Program
                     Console.WriteLine("Invalid input. Please enter a valid number of scoops (1, 2, or 3).");
                 }
             }
-        
+
             // Check if the option is a cone and prompt user for upgrade to dipped
             bool dipped = false;
             string waffleFlavour = "";
@@ -359,7 +378,7 @@ internal class Program
                 {
                     Console.Write("Upgrade to chocolate-dipped cone? (Y/N): ");
                     string upgradeInput = Console.ReadLine()?.ToUpper();
-        
+
                     if (upgradeInput == "Y")
                     {
                         dipped = true;
@@ -397,8 +416,8 @@ internal class Program
                     }
                 }
             }
-        
-        
+
+
             // Display the available ice cream flavour
             Console.WriteLine("Available ice cream flavours:" +
                 "\n[1] Vanilla" +
@@ -409,21 +428,21 @@ internal class Program
                 "\n[6] Sea Salt");
 
             List<Flavour> flavourList = new List<Flavour>();
-        
+
             for (int i = 1; i <= scoops; i++)
             {
                 Console.Write($"Enter flavour for scoop #{i}: ");
-                string selectedFlavor = Console.ReadLine()?.Trim().ToLower();
-        
+                string selectedFlavor = Console.ReadLine()?.Trim();
+
                 // Validate user input against available flavors
-                while (!(selectedFlavor == "vanilla" || selectedFlavor == "chocolate" || selectedFlavor == "strawberry" || selectedFlavor == "durian" || selectedFlavor == "ube" || selectedFlavor == "sea salt"))
+                while (!(selectedFlavor == "vanilla" || selectedFlavor == "chocolate" || selectedFlavor == "strawberry" || selectedFlavor == "durian" || selectedFlavor == "Ube" || selectedFlavor == "sea salt"))
                 {
                     Console.WriteLine($"Invalid ice cream flavor: {selectedFlavor}. Please choose from the available options.");
                     Console.Write($"Enter flavour for scoop #{i}: ");
                     selectedFlavor = Console.ReadLine()?.Trim().ToLower();
                 }
-        
-                flavourList.Add(new Flavour(selectedFlavor,false, i));
+
+                flavourList.Add(new Flavour(selectedFlavor, false, i));
             }
 
             // Display the available ice cream toppings
@@ -432,16 +451,16 @@ internal class Program
                 "\n[2] Mochi" +
                 "\n[3] Sago" +
                 "\n[4] Oreos");
-        
+
             List<Topping> toppingList = new List<Topping>();
-        
+
             for (int i = 1; i <= 4; i++)
             {
                 Console.Write($"Enter topping for scoop #{i}: ");
-                string selectedTopping = Console.ReadLine()?.Trim().ToLower();
-        
+                string selectedTopping = Console.ReadLine()?.Trim();
+
                 // Validate user input against available toppings
-                while (!(selectedTopping == "sprinkles" || selectedTopping == "mochi" || selectedTopping == "sago" || selectedTopping == "oreos"))
+                while (!(selectedTopping == "sprinkles" || selectedTopping == "mochi" || selectedTopping == "Sago" || selectedTopping == "oreos"))
                 {
                     Console.WriteLine($"Invalid ice cream topping: {selectedTopping}. Please choose from the available options.");
                     Console.Write($"Enter topping for scoop #{i}: ");
@@ -450,18 +469,18 @@ internal class Program
 
                 toppingList.Add(new Topping(selectedTopping));
             }
-        
+
             // Create the appropriate ice cream object based on the selected option
             IceCream iceCream = null;
             if (option.ToLower() == "cup")
             {
                 iceCream = new Cup(option, scoops, flavourList, toppingList);
-        
+
             }
             else if (option.ToLower() == "cone")
             {
                 iceCream = new Cone(option, scoops, flavourList, toppingList, dipped);
-        
+
             }
             else if (option.ToLower() == "waffle")
             {
@@ -471,7 +490,7 @@ internal class Program
             {
                 Console.WriteLine("Invalid option");
             }
-        
+
             if (iceCream != null)
             {
                 newOrder.AddIceCream(iceCream);
@@ -498,8 +517,10 @@ internal class Program
                     string[] line = s.Split(',');
                     int id = Convert.ToInt32(line[0]);
                     int memberId = Convert.ToInt32(line[1]);
-                    DateTime timeReceived = Convert.ToDateTime(line[2]);
-                    DateTime timeFulfilled = Convert.ToDateTime(line[3]);
+                    DateTime timeReceived = DateTime.ParseExact(line[2], "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
+                    DateTime timeFulfilled = DateTime.ParseExact(line[3], "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture);
+                    //DateTime timeReceived = Convert.ToDateTime(line[2]);
+                    //DateTime timeFulfilled = Convert.ToDateTime(line[3]);
                     string option = line[4];
                     int scoops = Convert.ToInt32(line[5]);
 
@@ -1414,7 +1435,8 @@ internal class Program
         InitCustomers(customerDict); //Reading data from customers.csv
         InitOrders(customerDict); //Reading data from orders.csv
 
-        Order order1 = new Order(12, Convert.ToDateTime("27 / 10 / 2023 13:28"));
+        Order order1 = new Order(12, DateTime.ParseExact("27/10/2023 13:28", "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
+        //Order order1 = new Order(12, Convert.ToDateTime("27 / 10 / 2023 13:28"));
         List<Flavour> flavours = new List<Flavour>();
         List<Topping> toppings = new List<Topping>();
         flavours.Add(new Flavour("Chocolate", false, 3));
