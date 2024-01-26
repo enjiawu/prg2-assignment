@@ -14,8 +14,8 @@ using System.Reflection.Metadata.Ecma335;
 internal class Program
 {
     //Defining methods to be used for different classes and the main program
-    static public Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
-    static public Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
+    public static Dictionary<string, double> flavourData = new Dictionary<string, double>(); //Dictionary to store information on flavour and respective cost
+    public static Dictionary<string, double> toppingData = new Dictionary<string, double>(); //Dictionary to store information on toppings and respective cost
     private static void Main(string[] args)
     {
         void Menu() //Function to display menu
@@ -606,35 +606,43 @@ internal class Program
         //Option 6 - Modifying order details
         void ModifyIceCream(Order currentOrder) //Method to mofidy ice cream
         {
-            try //Data validation
+            Console.WriteLine("Choose an existing ice cream to modify");
+            Console.WriteLine("---------------------------------------");
+            while (true)
             {
-                Console.WriteLine("Choose an existing ice cream to modify");
-                Console.WriteLine("---------------------------------------");
-
-                //Prompting user to select an ice cream
-                Console.Write("Enter a number to select which ice cream to modify: ");
-                int icNo = Convert.ToInt32(Console.ReadLine());
-
-                if (icNo < currentOrder.IceCreamList.Count() || icNo > currentOrder.IceCreamList.Count()) //Making sure the ice cream number is in range
+                try //Data validation
                 {
-                    throw new ArgumentOutOfRangeException();
-                }
+                    //Prompting user to select an ice cream
+                    Console.Write("Enter a number to select which ice cream to modify (0 to cancel): ");
+                    int icNo = Convert.ToInt32(Console.ReadLine());
 
-                //Calling method to modify ice cream
-                currentOrder.ModifyIceCream(icNo);
+                    if (icNo == 0)
+                    {
+                        break; //quit loop
+                    }
+                    else if (icNo < currentOrder.IceCreamList.Count() || icNo > currentOrder.IceCreamList.Count()) //Making sure the ice cream number is in range
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+
+                    //Calling method to modify ice cream
+                    currentOrder.ModifyIceCream(icNo);
+                    break;
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Incorrect format! Please enter a number.");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("Option is out of range. Please enter a valid option!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Please only enter the number of the ice cream in the order!");
+                }
             }
-            catch (FormatException ex)
-            {
-                Console.WriteLine("Incorrect format! Please enter a number.");
-            }
-            catch (ArgumentOutOfRangeException ex)
-            {
-                Console.WriteLine("Option is out of range. Please enter a valid option!");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Please only enter the number of the ice cream in the order!");
-            }
+           
         }
 
         void AddNewIceCream(Order currentOrder) //Method to add new ice cream
@@ -665,8 +673,16 @@ internal class Program
                     }
                     else
                     {
-                        throw new Exception();
+                        throw new ArgumentOutOfRangeException();
                     }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Please enter one of the available options!");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("Option not found! Please enter one of the available options!");
                 }
                 catch (Exception ex)
                 {
@@ -691,6 +707,10 @@ internal class Program
                     {
                         break;
                     }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Format incorrect! Please enter a number from 1-3!");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
@@ -1113,15 +1133,15 @@ internal class Program
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Incorrect format! Please enter a number from 1-6!");
+                    Console.WriteLine("Incorrect format! Please a valid MemberID!");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    Console.WriteLine("Please only enter a number between the range 1-6!");
+                    Console.WriteLine("Please a valid MemberID!");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Please only enter a number between 1-6!");
+                    Console.WriteLine("Please a valid MemberID");
                 }
             }
            

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
@@ -37,474 +38,496 @@ namespace S10256978_PRG2Assignment.Classes
             Dictionary<string, double> flavourData = Program.flavourData; //Dictionary to store information on flavour and respective cost
             Dictionary<string, double> toppingData = Program.toppingData; //Dictionary to store information on toppings and respective cost
 
-            void ChangeFlavours(IceCream ic) //Function to add flavours
+            IceCream icecream = IceCreamList[i - 1]; //Getting ice cream from ice cream list
+
+            //Prompting the user for information on the modifications they wish to make to the ice cream selected
+            bool modificationsMade = false;
+            //Prompting user for all required info to create a new ice cream
+            string icOption;
+            IceCream modifiedIceCream = icecream; //New modified ice cream that will replace the old one if any changes have been made
+
+            Console.Write($"Current option: {icecream.Option}\n" +
+                            "----------------\n" +
+                            "Available Options\n" +
+                            "----------------\n" +
+                            "Cone\n" +
+                            "Waffle\n" +
+                            "Cup\n");
+
+            while (true) //Data validation for ice cream option
             {
-                IceCream icecream = ic;
-                while (true) //Iterating through the loop until user does not want to modify flavours anymore
+                try
                 {
-                    string currentFlavours = "";
-                    int count = 1;
-                    foreach (Flavour f in icecream.Flavours)
+                    Console.Write("Enter ice cream option (0 to continue): "); //If option is the same, user can enter 0 to continue to the next modification
+
+                    icOption = Console.ReadLine().ToLower();
+
+                    if (icOption == "0")
                     {
-                        currentFlavours += $"[{count}] {f}\n";
+                        break; //breaking the loop
                     }
 
-                    Console.Write("Current Flavours:\n" + //Print out current flavours
-                        "----------------\n" +
-                        $"{currentFlavours}\n" +
-                        $"Enter flavour to modify: ");
-                    int modifyOption = Convert.ToInt32(Console.ReadLine());
-                    Flavour flavour = icecream.Flavours[modifyOption - 1]; //Get flavour to modify
+                    icOption = char.ToUpper(icOption[0]) + icOption.Substring(1).ToLower();
+                    string[] options = { "Cone", "Cup", "Waffle" };
 
-                    for (int x = 0; x < flavour.Quantity; x++) //Iterating through the quantity of the selected flavour (in case they want to select two different flavours)
+                    if (options.Contains(icOption))//Checking if the option exists
                     {
-                        int flavourCount = 0; //Count the quantity of flavours entered
-                        int scoopCount = flavour.Quantity; //Count the number of flavours to add  
-                        for (int i = 0; i < icecream.Scoops; i++) //getting flavours for new ice cream
+                        modifiedIceCream.Option = icOption; //Changing the option for the modified ice cream
+                        break;
+                    }
+                    else
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Please enter one of the available options!");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("Option not found! Please enter one of the available options!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Please enter one of the available options!");
+                }
+            }
+                
+
+            Console.Write($"Current number of scoops: {icecream.Scoops}\n" +
+                    "----------------\n");
+            int scoops;
+            while (true) //Data validation for number of scoops
+            {
+                try
+                {
+                    Console.Write("Enter number of scoops (0 to continue): ");
+                    scoops = Convert.ToInt32(Console.ReadLine());
+
+                    if (scoops == 0)
+                    {
+                        break; //breaking the loop
+                    }
+                    else if (scoops > 3 || scoops <= 0) //Check if number of scoops is between 1 and 3
+                    {
+                        throw new ArgumentOutOfRangeException();
+                    }
+                    else
+                    {
+                        modifiedIceCream.Scoops = scoops; //Changing the number of scoops for the ice cream
+                        break;
+                    }
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Format incorrect! Please enter a number from 1-3!");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("Please enter an option from 1-3.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Please only enter a number between 1-3.");
+                }
+
+            }
+
+            List<Flavour> flavours = new List<Flavour>(); //list of hold all the flavours to be added
+            List<Topping> toppings = new List<Topping>(); //list of hold all the toppings to be added
+
+            int flavourCount = 0; //Count the quantity of flavours entered
+            int scoopCount = scoops; //Count the number of scoops to add  
+            bool noFlavourUpdate = false; //Check if flavour still wants to be updated
+
+            for (int y = 0; y < scoops; y++) //getting flavours for new ice cream
+            {
+                if (noFlavourUpdate)
+                {
+                    break;
+                }
+
+                //Printing out available flavours
+                string currentFlavours = "";
+                foreach (Flavour f in icecream.Flavours)
+                {
+                    currentFlavours += $"{f}\n";
+                }
+
+                Console.Write("Current Flavours:\n" + //Print out current flavours
+                    "----------------\n" +
+                    $"{currentFlavours}\n");
+
+                Console.Write("--------------------------\n" +
+                            "Available Flavours\n" +
+                            "----------------\n");
+                foreach (string f in flavourData.Keys)
+                {
+                    Console.WriteLine($"{f}");
+                }
+                Console.WriteLine("Please enter all selected flavours including modified and existing ones.\n");
+
+                string flavourOption = " ";
+                while (true) //Making sure that all scoops have a selected flavour
+                {
+                    while (true) //Data validation for flavour option
+                    {
+                        try
                         {
-                            //Printing out available flavours
-                            Console.Write("\nAvailable Flavours\n" +
-                                        "----------------\n");
-                            foreach (string f in flavourData.Keys)
+                            Console.Write("Enter flavour to add (0 to not change ANY flavours): "); //If option is the same, user can enter 0 to continue to the next modification
+
+                            flavourOption = Console.ReadLine().ToLower();  
+
+                            if (flavourOption == "0") //Breaking out of the loop if flavourOption == 0
                             {
-                                Console.WriteLine($"{f}");
+                                break;
                             }
-                            Console.WriteLine();
-
-                            string flavourOption;
-                            while (true) //Making sure that all scoops have a selected flavour
+                            else if (flavourOption.Split(" ").Length > 1) // checking if its Sea Salt
                             {
-                                while (true) //Data validation for flavour option
+                                string[] words = flavourOption.Split(' ');
+                                for (int x = 0; x < words.Length; x++)
                                 {
-                                    try
-                                    {
-                                        Console.Write("Enter new flavour: ");
-
-                                        flavourOption = Console.ReadLine().ToLower(); //checking if its Sea Salt 
-                                        if (flavourOption.Split(" ").Length > 1)
-                                        {
-                                            string[] words = flavourOption.Split(' ');
-                                            for (int y = 0; y < words.Length; y++)
-                                            {
-                                                words[y] = char.ToUpper(words[y][0]) + words[y].Substring(1);
-                                            }
-                                            flavourOption = string.Join(" ", words); //Updating the flavour option
-                                        }
-                                        else
-                                        {
-                                            flavourOption = char.ToUpper(flavourOption[0]) + flavourOption.Substring(1).ToLower(); //Capitalizing user input
-                                        }
-
-                                        if (!flavourData.ContainsKey(flavourOption))
-                                        {
-                                            Console.WriteLine("No such flavour exists!");
-                                            throw new FormatException();
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine("Please enter an available flavour.");
-                                    }
+                                    words[x] = char.ToUpper(words[x][0]) + words[x].Substring(1);
                                 }
+                                flavourOption = string.Join(" ", words); //Updating the flavour option
+                            }
+                            else
+                            {
+                                flavourOption = char.ToUpper(flavourOption[0]) + flavourOption.Substring(1).ToLower(); //Capitalizing user input
+                            }
 
-                                //Check for quantity of flavour
-                                int quantity;
-                                while (true) //For data validation
-                                {
-
-                                    try
-                                    {
-                                        Console.Write("Enter quantity of flavour (0 to choose another flavour) : ");
-                                        quantity = Convert.ToInt32(Console.ReadLine());
-                                        if (quantity > scoopCount || quantity < 0) //Making sure quantity of selected flavour does not exceed the number of scoops in the ice cream or is negative
-                                        {
-                                            throw new ArgumentOutOfRangeException();
-                                        }
-                                        {
-                                            scoopCount -= quantity; //Deducting the number of scoops remaining 
-                                            break;
-                                        }
-                                    }
-                                    catch (FormatException ex)
-                                    {
-                                        Console.WriteLine("Incorrect format! Please enter a number!");
-                                    }
-                                    catch (ArgumentOutOfRangeException ex)
-                                    {
-                                        Console.WriteLine($"Option out of range! Quantity must be lesser or equals to {scoopCount}!");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine($"Quantity must be lesser or equals to {scoopCount}!");
-                                    }
-
-                                }
-
-                                if (quantity > 0) //Making sure user entered a quantity
-                                {
-                                    if (flavourData[flavourOption] > 0) //Check if ice cream is premium
-                                    {
-                                        if (!icecream.Flavours.Contains(flavour)) //Check if flavour is already in ice cream
-                                        {
-                                            Flavour newFlavour = new Flavour(flavourOption, true, quantity);
-                                            icecream.Flavours.Add(newFlavour); //adding flavour to flavours list
-                                        }
-                                        else
-                                        {
-                                            icecream.Flavours[count].Quantity++; //Add 1 to quantity
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (!icecream.Flavours.Contains(flavour)) //Check if flavour is already in ice cream
-                                        {
-                                            Flavour newFlavour = new Flavour(flavourOption, false, quantity);
-                                            icecream.Flavours.Add(newFlavour); //adding flavour to flavours list
-                                        }
-                                        else
-                                        {
-                                            icecream.Flavours[count].Quantity++; //Add 1 to quantity
-                                        }
-                                    }
-                                    Console.WriteLine("Flavour has been added.");
-                                    flavourCount += quantity; //Add the quantity to the number of flavours that have been added 
-
-                                    //Quit for loop if the quantity of flavours have been hit
-                                    if (flavourCount >= icecream.Scoops)
-                                    {
-                                        Console.WriteLine("Maximum number of flavours have been reached.");
-                                        break;
-                                    }
-                                }
-
+                            if (!flavourData.ContainsKey(flavourOption))
+                            {
+                                Console.WriteLine("No such flavour exists!");
+                                throw new FormatException();
+                            }
+                            else
+                            {
+                                break;
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Please enter an available flavour.");
+                        }
                     }
-                }
-            }
-
-            void ChangeToppings(IceCream icecream) //Function for changing of toppings
-            {
-                while (true) //Iterating through the loop until user does not want to modify toppings anymore
-                {
-                    string toppings = "";
-                    int count = 1;
-                    foreach (Topping t in icecream.Toppings)
+                    if (flavourOption == "0") //Breaking out of the loop if flavourOption == 0
                     {
-                        toppings += $"[{count}] {t}\n";
+                        noFlavourUpdate = true; //break from the main for loop
+                        break; //break form the while loop that makes sure all scoops have a flavour
                     }
 
-                    Console.Write("Current Toppings:\n" + //Print out current Toppings
-                        "----------------\n" +
-                        $"{toppings}\n" +
-                        $"Enter toppings to modify: ");
-                    int modifyOption = Convert.ToInt32(Console.ReadLine());
-                    Topping topping = icecream.Toppings[modifyOption - 1]; //Get topping to modify
+                    //Check for quantity of flavour
+                    int quantity;
+                    while (true) //For data validation
+                    {
 
-                    Console.Write("Available Toppings\n" +
+                        try
+                        {
+                            Console.Write("Enter quantity of flavour (0 to choose another flavour) : ");
+                            quantity = Convert.ToInt32(Console.ReadLine());
+                            if (quantity > scoopCount || quantity < 0) //Making sure quantity of selected flavour does not exceed the number of scoops in the ice cream or is negative
+                            {
+                                throw new ArgumentOutOfRangeException();
+                            }
+                            {
+                                scoopCount -= quantity; //Deducting the number of scoops remaining 
+                                break;
+                            }
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine("Incorrect format! Please enter a number!");
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine($"Option out of range! Quantity must be lesser or equals to {scoopCount}!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Quantity must be lesser or equals to {scoopCount}!");
+                        }
+
+                    }
+
+                    if (quantity > 0) //Making sure user entered a quantity
+                    {
+                        if (flavourData[flavourOption] > 0) //Check if ice cream is premium
+                        {
+                            Flavour newFlavour = new Flavour(flavourOption, true, quantity);
+                            flavours.Add(newFlavour); //adding flavour to flavours list
+                            Console.WriteLine("Flavour has been added.");
+                        }
+                        else
+                        {
+                            Flavour newFlavour = new Flavour(flavourOption, false, quantity);
+                            flavours.Add(newFlavour); //adding flavour to flavours list
+                            Console.WriteLine("Flavour has been added.");
+                        }
+
+                        flavourCount += quantity; //Add the quantity to the number of flavours that have been added 
+
+                        //Quit for loop if the quantity of flavours have been hit
+                        if (flavourCount >= scoops)
+                        {
+                            Console.WriteLine("Maximum number of flavours have been reached.");
+                            break;
+                        }
+                    }
+
+                }
+
+                int countTopping = 0; //To check if maximum number of toppings has been reached
+                string currentToppings = "";
+                bool noToppingUpdate = false; //To check if toppings have been updated
+
+                foreach (Topping t in icecream.Toppings)
+                {
+                    currentToppings += $"{t}\n";
+                }
+
+                Console.Write("Current Toppings:\n" + //Print out current Toppings
                     "----------------\n" +
-                    "[1] Sprinkles\n" +
-                    "[2] Mochi\n" +
-                    "[3] Sago\n" +
-                    "[4] Oreos\n" +
-                    "[0] Return\n" +
-                    "Enter new topping(s): ");
+                    $"{currentToppings}\n");
 
-                    int toppingOption = Convert.ToInt32(Console.ReadLine());
-                    if (toppingOption == 0)
-                    {
-                        break; //break from while loop
-                    }
-
-                    //Changing the topping
-                    icecream.Toppings.Remove(topping); //Removing the topping that is to be removed from Toppings
-                    Topping newTopping;
-                    if (toppingOption == 1)
-                    {
-                        newTopping = new Topping("Sprinkles");
-                    }
-                    else if (toppingOption == 2)
-                    {
-                        newTopping = new Topping("Mochi");
-                    }
-                    else if (toppingOption == 3)
-                    {
-                        newTopping = new Topping("Sago");
-                    }
-                    else
-                    {
-                        newTopping = new Topping("Oreos");
-                    }
-                    icecream.Toppings.Add(newTopping); //Adding new toppings 
-                }
-            }
-
-            void ChangeDipping(IceCream icecream) //Function to change dipping
-            {
-                if (icecream is Cone)
+                while (countTopping < 4 && !noToppingUpdate) //getting toppings for new ice cream
                 {
+                    Console.Write("Available Toppings\n" +
+                            "----------------\n");
+                    foreach (string t in toppingData.Keys)
+                    {
+                        Console.WriteLine($"{t}");
+                    }
+
+                    string toppingOption = " ";
+                    while (true) //Data validation for topping input
+                    {
+                        try
+                        {
+                            Console.Write("Enter new topping (0 to NOT make any changes to ALL toppings): ");
+
+                            toppingOption = Console.ReadLine();
+
+                            if (toppingOption == "0")
+                            {
+                                noToppingUpdate = true; //change no topping update to true
+                                break;
+                            }
+                            else if (toppingData.ContainsKey(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()) || toppingOption == "0") //Checking if topping exists
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine("There is no such topping!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Invalid input! Please only enter the available options!");
+                        }                  
+                    }
+
+                    if (toppingOption == "0")
+                    {
+                        break;
+                    }
+
+                    //Checking if user wants to add more toppings
+                    string addTopping = " ";
+                    while (true)
+                    {
+                        try
+                        {
+                            Console.Write("Do you still want to add add toppings? (Y/N): ");
+                            addTopping = Console.ReadLine().ToUpper();
+
+                            if (addTopping == "N" || addTopping == "Y")
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                throw new FormatException();
+                            }
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine("Incorrect format! Please only enter Y or N!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Please only enter Y or N");
+                        }
+                    }
+
+                    Topping newTopping = new Topping(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()); //Making new topping
+                    toppings.Add(newTopping); //Adding new toppings 
+                    countTopping++; //Incrementing countTopping
+                    Console.WriteLine("Topping has been added. \n");
+
+                    if (addTopping == "N")
+                    {
+                        break; //break from for loop
+                    }
+                }
+
+                //Checking if flavours and toppings has been previously cancelled
+                if (noFlavourUpdate)
+                {
+                    flavours = icecream.Flavours; //Making sure the flavours do not change
+                }
+
+                if (noToppingUpdate)
+                {
+                    toppings = icecream.Toppings; //Making sure the toppings do not change
+                }
+
+                //Changing all the data for toppings and flavours
+                if (icOption == "Cone")
+                {
+                    if (icecream is not Cone)
+                    {
+                        modifiedIceCream = new Cone(modifiedIceCream.Option, modifiedIceCream.Scoops, flavours, toppings, false); //Making the modified icecream a cone if it is not but the option is a cone
+                    }
+
                     Cone cone = (Cone)icecream; //Need to downcast to access cone properties
-                    Console.Write($"Current Dipping: {cone.Dipped}\n" + //Print out if cone is currently dipped
+                    bool dipped = cone.Dipped; 
+
+                    Console.Write($"\nCurrent Dipping: {cone.Dipped}\n" + //Print out if cone is currently dipped
                         "[1] Chocolate-dipped cone\n" +
                         "[2] Regular cone\n" +
-                        "[0] Return\n" +
-                        "Enter option: ");
+                        "[0] Continue\n");
 
-                    int coneOption = Convert.ToInt32(Console.ReadLine());
-
-                    if (coneOption == 0)
+                    while (true) //Data validation to check if cone option is valid
                     {
-                        return;
+                        try
+                        {
+                            Console.Write("Enter option: ");
+                            int coneOption = Convert.ToInt32(Console.ReadLine());
+                            if (coneOption == 0) //Break if 0 is chosen
+                            {
+                                break; 
+                            }
+                            else if (coneOption == 1) //Check if cone is dipped
+                            {
+                                dipped = true;
+                                break;
+                            }
+                            else if (coneOption == 2)
+                            {
+                                dipped = false;
+                                break;
+                            }
+                            else
+                            {
+                                throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine("Incorrect format! Please enter an option from 1-2.");
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine("Enter a number between 1-2!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Please only enter a number between 1-2!");
+                        }
                     }
-                    else if (coneOption == 1)
-                    {
-                        cone.Dipped = true;
-                    }
-                    else
-                    {
-                        cone.Dipped = false;
-                    }
+                    icecream = new Cone("Cone", scoops, flavours, toppings, dipped); //Updating the ice cream 
+                    modificationsMade = true; //Indicate that modifications have been made
                 }
-                else
+                else if (icOption == "Waffle")
                 {
-                    Console.WriteLine("Ice cream must be a cone!");
-                }
-            }
+                    if (icecream is not Waffle)
+                    {
+                        modifiedIceCream = new Waffle(modifiedIceCream.Option, modifiedIceCream.Scoops, flavours, toppings, "Original"); //Making the modified icecream a waffle if it is not but the option is a cone
+                    }
 
-            void ChangeWaffleFlavour(IceCream icecream) //Function to change waffle flavour
-            {
-                if (icecream is Waffle)
-                {
                     Waffle waffle = (Waffle)icecream; //Need to downcast to access waffle properties
                     Console.Write($"Current Waffle Flavour: {waffle.WaffleFlavour}\n" + //Print out current waffle flavour
                         "[1] Original\n" +
                         "[2] Red Velvet\n" +
                         "[3] Charcoal\n" +
                         "[4] Pandan Waffle\n" +
-                        "[0] Return" +
-                        "Enter option: ");
+                        "[0] Return\n");
 
-                    int waffleOption = Convert.ToInt32(Console.ReadLine());
+                    while (true) //Data validtion to check if waffle option is valid
+                    {
+                        try
+                        {
 
-                    if (waffleOption == 0)
-                    {
-                        return;
+                            Console.Write("Enter option: ");
+
+                            int waffleOption = Convert.ToInt32(Console.ReadLine());
+
+                            if (waffleOption == 0)
+                            {
+                                break;
+                            }
+                            else if (waffleOption == 1)
+                            {
+                                waffle.WaffleFlavour = "Original";
+                            }
+                            else if (waffleOption == 2)
+                            {
+                                waffle.WaffleFlavour = "Red Velvet";
+                            }
+                            else if (waffleOption == 3)
+                            {
+                                waffle.WaffleFlavour = "Charcoal";
+                            }
+                            else if (waffleOption == 4)
+                            {
+                                waffle.WaffleFlavour = "Pandan";
+                            }
+                            else
+                            {
+                                throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine("Incorrect format! Please enter a number between 1-4.");
+                        }
+                        catch (ArgumentOutOfRangeException ex)
+                        {
+                            Console.WriteLine("Option must be between the range of 1-4!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Please only enter a number between 1-4!");
+                        }
                     }
-                    else if (waffleOption == 1)
-                    {
-                        waffle.WaffleFlavour = "Original";
-                    }
-                    else if (waffleOption == 2)
-                    {
-                        waffle.WaffleFlavour = "Red Velvet";
-                    }
-                    else if (waffleOption == 3)
-                    {
-                        waffle.WaffleFlavour = "Charcoal";
-                    }
-                    else
-                    {
-                        waffle.WaffleFlavour = "Pandan";
-                    }
+                    icecream = new Waffle("Waffle", scoops, flavours, toppings, waffle.WaffleFlavour);//Updating the ice cream 
+                    modificationsMade = true; //Indicate that modifications have been made
+                }
+                else if (icOption == "Cup")
+                {
+                    icecream = new Cup("Cup", scoops, flavours, toppings); //Updating the ice cream 
+                    modificationsMade = true; //Indicate that modifications have been made
+                }
+                
+                //Checking if any modifications have been made
+                if (modificationsMade == true)
+                {
+                    Console.WriteLine("Ice Cream Updated!");
+                    Console.WriteLine(icecream);
                 }
                 else
                 {
-                    Console.WriteLine("Ice cream must be a waffle!");
-                }
-            }
-
-            IceCream icecream = IceCreamList[i - 1]; //Getting ice cream from ice cream list
-
-            //Prompting the user for information on the modifications they wish to make to the ice cream selected
-            bool modificationsMade = false;
-            while (true)
-            {
-                Console.Write("\nSelect which item you want to modify:\n" +
-                            "[1] Option\n" +
-                            "[2] Scoop\n" +
-                            "[3] Flavours\n" +
-                            "[4] Toppings\n" +
-                            "[5] Dipped Cone (if applicable)\n" +
-                            "[6] Waffle flavour (if applicable)\n" +
-                            "[0] Done\n" +
-                            "Enter your option: ");
-                int option = Convert.ToInt32(Console.ReadLine());
-
-                if (option == 0) //Quit option to return to main program
-                {
-                    if (modificationsMade) //Check if modifications have been made
-                    {
-                        Console.WriteLine("Ice Cream has been modified.");
-                        break;
-                    }
                     Console.WriteLine("No changes have been made.");
-                    break;
+                    Console.WriteLine(icecream);
                 }
-                else if (option == 1) //Change ice cream option
-                {
-                    Console.Write($"Current option: {icecream.Option}\n" +
-                        "----------------\n" +
-                        "[1] Waffle\n" +
-                        "[2] Cone\n" +
-                        "[3] Cup\n" +
-                        "[0] Return\n" +
-                        "Enter option: ");
-                    int icOption = Convert.ToInt32(Console.ReadLine());
 
-                    if (icOption == 0)
-                    {
-                        continue;
-                    }
-                    else if (icOption == 1)
-                    {
-                        icecream.Option = "Waffle";
-                        icecream = new Waffle("Waffle", icecream.Scoops, icecream.Flavours, icecream.Toppings, "Original");
-
-                        ChangeWaffleFlavour(icecream); //Calling change waffle flavour function
-                    }
-                    else if (icOption == 2)
-                    {
-                        icecream.Option = "Cone";
-                        icecream = new Cone("Waffle", icecream.Scoops, icecream.Flavours, icecream.Toppings, false);
-                        ChangeDipping(icecream); //Calling change dipping function
-                    }
-                    else
-                    {
-                        icecream.Option = "Cup";
-                        icecream = new Cup("Waffle", icecream.Scoops, icecream.Flavours, icecream.Toppings);
-                    }
-                }
-                else if (option == 2) //Change scoop option
-                {
-                    Console.Write($"Current number of scoops: {icecream.Scoops}\n" +
-                        "----------------\n" +
-                        "Enter number of scoops between 1-3: ");
-                    int scoops = Convert.ToInt32(Console.ReadLine());
-                    if (scoops == 1)
-                    {
-                        icecream.Scoops = 1;
-                    }
-                    else if (scoops == 2)
-                    {
-                        icecream.Scoops = 2;
-                    }
-                    else if (scoops == 3)
-                    {
-                        icecream.Scoops = 3;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Please enter a number from 1 to 3!");
-                    }
-
-                    int flavoursCount = 0; //To keep track of how many flavours there currently are
-                    Dictionary<string, Flavour> icDict = new Dictionary<string, Flavour>(); //To keep track of ice cream flavour and corresponding ice cream
-                    foreach (Flavour f in icecream.Flavours)
-                    {
-                        flavoursCount += f.Quantity;
-                        icDict[f.Type] = f;
-                    }
-
-                    //To check if ice cream flavours match the new number of scoops
-                    if (icecream.Scoops > flavoursCount) //If number of ice cream scoops is more than flavours
-                    {
-                        int flavoursToRemove = icecream.Scoops - flavoursCount; //Number of flavours to be removed
-                        while (flavoursToRemove != 0)
-                        {
-                            Console.Write($"You currently have too many flavours for {icecream.Scoops} scoops.\n" +
-                            $"{icecream.Flavours}\n");
-                            while (true)
-                            {
-                                Console.Write($"Choose ONE ice cream flavour to remove: \n");
-                                string icRemove = Console.ReadLine().ToLower(); //IceCream flavour to remove
-                                icRemove = char.ToUpper(icRemove[0]) + icRemove.Substring(1).ToLower(); //Capitalizing first letter of input)
-                                if ( icDict.ContainsKey(icRemove))
-                                {
-                                    if (icDict[icRemove].Quantity == 1)
-                                    {
-                                        icecream.Flavours.Remove(icDict[icRemove]); //Removing from ice cream
-                                        icDict.Remove(icRemove); //Removing icecream from icDict
-                                    }
-                                    else
-                                    {
-                                        icDict[icRemove].Quantity --; //Deducting quantity by 1
-                                    }
-                                    flavoursToRemove--; //Deducting from the number of flavours to remove
-                                    break; //Breaking out of while loop
-                                }
-                                else
-                                {
-                                    Console.WriteLine("There is no flavour in that ice cream!");
-                                }
-                            }                            
-                        }
-
-                    }
-                    else if (icecream.Scoops < flavoursCount)
-                    {
-                        int flavoursToAdd = icecream.Scoops - flavoursCount; //Number of flavours to be added
-                        while (flavoursToAdd != 0)
-                        {
-                            Console.Write($"You currently have insufficient flavours for {icecream.Scoops} scoops.");
-                            while (true)
-                            {
-                                Console.Write("\nAvailable Flavours\n" +
-                                "----------------\n" +
-                                "Vanilla\n" +
-                                "Chocolate\n" +
-                                "Strawberry\n" +
-                                "Durian\n" +
-                                "Ube\n" +
-                                "Sea Salt\n" +
-                                "Return\n" +
-                                "Enter new flavour(s): ");
-                                string icAdd = Console.ReadLine(); //IceCream flavour to Add
-                                icAdd = char.ToUpper(icAdd[0]) + icAdd.Substring(1).ToLower(); //Capitalizing first letter of input)
-                                string[] flavours = { "Vanilla", "Chocolate", "Strawberry", "Durian", "Ube", "Sea salt" };
-
-                                /*
-                                if (flavours.Contains(icAdd))
-                                {
-                                    if (icDict.ContainsKey(icAdd))
-                                    {
-                                        icDict[icAdd].Quantity++; //Deducting quantity by 1
-                                    }
-                                    else
-                                    {
-                                        icDict[icAdd] = 1; //Add new flavour
-                                    }
-                                    flavoursToAdd++; //Deducting from the number of flavours to remove
-                                    break; //Breaking out of while loop
-                                }
-                                else
-                                {
-                                    Console.WriteLine("There is no flavour in that ice cream!");
-                                }*/
-                            }
-                        }
-                    }
-                    
-                }
-                else if (option == 3) //Change flavours option
-                {
-                    ChangeFlavours(icecream); //Calling change flavours function
-                }
-                else if (option == 4) //Change toppings option
-                {
-                    ChangeToppings(icecream); //Calling change toppings function
-                }
-                else if (option == 5) //Change cone dipping option
-                {
-                    ChangeDipping(icecream); //Calling change dipping function
-                }
-                else //Change waffle flavour option
-                {
-                    ChangeWaffleFlavour(icecream); //Calling change waffle flavour
-                }
             }
         }
         public void AddIceCream(IceCream ic)
