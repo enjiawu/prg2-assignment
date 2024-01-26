@@ -1154,7 +1154,7 @@ internal class Program
                                     throw new ArgumentOutOfRangeException();
                                 }
 
-                                Console.WriteLine("Updated Order\n" +
+                                Console.WriteLine("\nUpdated Order\n" +
                                     "-------------------");
                                 Console.WriteLine(currentOrder);
                                 break;

@@ -107,6 +107,7 @@ namespace S10256978_PRG2Assignment.Classes
 
                     if (scoops == 0)
                     {
+                        scoops = icecream.Scoops;
                         break; //breaking the loop
                     }
                     else if (scoops > 3 || scoops <= 0) //Check if number of scoops is between 1 and 3
@@ -115,7 +116,6 @@ namespace S10256978_PRG2Assignment.Classes
                     }
                     else
                     {
-                        modifiedIceCream.Scoops = scoops; //Changing the number of scoops for the ice cream
                         break;
                     }
                 }
@@ -214,6 +214,7 @@ namespace S10256978_PRG2Assignment.Classes
                     }
                     if (flavourOption == "0") //Breaking out of the loop if flavourOption == 0
                     {
+                        scoops = icecream.Scoops; //Changing the scoops back to the original if no flavours have been changed
                         noFlavourUpdate = true; //break from the main for loop
                         break; //break form the while loop that makes sure all scoops have a flavour
                     }
@@ -284,14 +285,14 @@ namespace S10256978_PRG2Assignment.Classes
 
                 foreach (Topping t in icecream.Toppings)
                 {
-                    currentToppings += $"{t}\n";
+                    currentToppings += $"{t}";
                 }
 
                 Console.Write("Current Toppings:\n" + //Print out current Toppings
                     "----------------\n" +
                     $"{currentToppings}\n");
 
-                while (countTopping < 4 && !noToppingUpdate) //getting toppings for new ice cream
+                while (countTopping < 4) //getting toppings for new ice cream
                 {
                     Console.Write("Available Toppings\n" +
                             "----------------\n");
@@ -338,6 +339,11 @@ namespace S10256978_PRG2Assignment.Classes
                         break;
                     }
 
+                    Topping newTopping = new Topping(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()); //Making new topping
+                    toppings.Add(newTopping); //Adding new toppings 
+                    countTopping++; //Incrementing countTopping
+                    Console.WriteLine("Topping has been added. \n");
+
                     //Checking if user wants to add more toppings
                     string addTopping = " ";
                     while (true)
@@ -347,13 +353,18 @@ namespace S10256978_PRG2Assignment.Classes
                             Console.Write("Do you still want to add add toppings? (Y/N): ");
                             addTopping = Console.ReadLine().ToUpper();
 
-                            if (addTopping == "N" || addTopping == "Y")
+                            if (addTopping != "N" && addTopping != "Y")
                             {
+                                throw new FormatException();
+                            }
+                            else if (addTopping == "N")
+                            {
+                                countTopping = 1000; //So that it will break from the main while loop
                                 break;
                             }
                             else
                             {
-                                throw new FormatException();
+                                break;
                             }
                         }
                         catch (FormatException ex)
@@ -364,16 +375,6 @@ namespace S10256978_PRG2Assignment.Classes
                         {
                             Console.WriteLine("Please only enter Y or N");
                         }
-                    }
-
-                    Topping newTopping = new Topping(char.ToUpper(toppingOption[0]) + toppingOption.Substring(1).ToLower()); //Making new topping
-                    toppings.Add(newTopping); //Adding new toppings 
-                    countTopping++; //Incrementing countTopping
-                    Console.WriteLine("Topping has been added. \n");
-
-                    if (addTopping == "N")
-                    {
-                        break; //break from for loop
                     }
                 }
 
@@ -396,7 +397,7 @@ namespace S10256978_PRG2Assignment.Classes
                         modifiedIceCream = new Cone(modifiedIceCream.Option, modifiedIceCream.Scoops, flavours, toppings, false); //Making the modified icecream a cone if it is not but the option is a cone
                     }
 
-                    Cone cone = (Cone)icecream; //Need to downcast to access cone properties
+                    Cone cone = (Cone)modifiedIceCream; //Need to downcast to access cone properties
                     bool dipped = cone.Dipped; 
 
                     Console.Write($"\nCurrent Dipping: {cone.Dipped}\n" + //Print out if cone is currently dipped
@@ -452,19 +453,18 @@ namespace S10256978_PRG2Assignment.Classes
                         modifiedIceCream = new Waffle(modifiedIceCream.Option, modifiedIceCream.Scoops, flavours, toppings, "Original"); //Making the modified icecream a waffle if it is not but the option is a cone
                     }
 
-                    Waffle waffle = (Waffle)icecream; //Need to downcast to access waffle properties
-                    Console.Write($"Current Waffle Flavour: {waffle.WaffleFlavour}\n" + //Print out current waffle flavour
+                    Waffle waffle = (Waffle)modifiedIceCream; //Need to downcast to access waffle properties
+                    Console.Write($"\nCurrent Waffle Flavour: {waffle.WaffleFlavour}\n" + //Print out current waffle flavour
                         "[1] Original\n" +
                         "[2] Red Velvet\n" +
                         "[3] Charcoal\n" +
                         "[4] Pandan Waffle\n" +
-                        "[0] Return\n");
+                        "[0] Continue\n");
 
                     while (true) //Data validtion to check if waffle option is valid
                     {
                         try
                         {
-
                             Console.Write("Enter option: ");
 
                             int waffleOption = Convert.ToInt32(Console.ReadLine());
@@ -476,18 +476,22 @@ namespace S10256978_PRG2Assignment.Classes
                             else if (waffleOption == 1)
                             {
                                 waffle.WaffleFlavour = "Original";
+                                break;
                             }
                             else if (waffleOption == 2)
                             {
                                 waffle.WaffleFlavour = "Red Velvet";
+                                break;
                             }
                             else if (waffleOption == 3)
                             {
                                 waffle.WaffleFlavour = "Charcoal";
+                                break;
                             }
                             else if (waffleOption == 4)
                             {
                                 waffle.WaffleFlavour = "Pandan";
+                                break;
                             }
                             else
                             {
@@ -519,15 +523,13 @@ namespace S10256978_PRG2Assignment.Classes
                 //Checking if any modifications have been made
                 if (modificationsMade == true)
                 {
+                    IceCreamList[IceCreamList.Count - 1] = icecream; //Updating ice cream values
                     Console.WriteLine("Ice Cream Updated!");
-                    Console.WriteLine(icecream);
                 }
                 else
                 {
                     Console.WriteLine("No changes have been made.");
-                    Console.WriteLine(icecream);
                 }
-
             }
         }
         public void AddIceCream(IceCream ic)
