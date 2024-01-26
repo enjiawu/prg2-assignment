@@ -479,14 +479,15 @@ internal class Program
         }
 
         //Option 5 - Display order details of a customers
+        Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order
+        Dictionary<int, List<Order>> memberOrderDict = new Dictionary<int, List<Order>>(); //Dictionary to keep track of which orders are under which member
+
         void InitOrders(Dictionary<int, Customer> customerDict)
         //Method to initialize orders from orders.csv and add them to respective members
         {
             using (StreamReader sr = new StreamReader("orders.csv"))
             //Reading order.csv to get all the current orders
             {
-                Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order
-                Dictionary<int, List<Order>> memberOrderDict = new Dictionary<int, List<Order>>(); //Dictionary to keep track of which orders are under which member
 
                 string header = sr.ReadLine(); //Reading header 
                 string? s;
