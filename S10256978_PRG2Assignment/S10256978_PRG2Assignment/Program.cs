@@ -529,7 +529,7 @@ internal class Program
         }
 
         //Option 6 - Modifying order details
-        void ModifyIceCream(Order currentOrder) //Method to mofidy ice cream
+        void ModifyIceCream(Order currentOrder) //Method to modify ice cream
         {
             Console.WriteLine("\nChoose an existing ice cream to modify");
             Console.WriteLine("---------------------------------------");
@@ -545,7 +545,7 @@ internal class Program
                     {
                         break; //quit loop
                     }
-                    else if (icNo < currentOrder.IceCreamList.Count() || icNo > currentOrder.IceCreamList.Count()) //Making sure the ice cream number is in range
+                    else if (icNo < 1 || icNo > currentOrder.IceCreamList.Count()) //Making sure the ice cream number is in range
                     {
                         throw new ArgumentOutOfRangeException();
                     }
@@ -1123,9 +1123,10 @@ internal class Program
 
             //Finding customer 
             Customer customer = new Customer();
+
             foreach (Customer c in customerDict.Values) //Iterating through customerDict
             {
-                if (c.CurrentOrder.Id == null)
+                if (c.CurrentOrder == null) //Check if customer has a current order
                 {
                     continue;
                 }
@@ -1135,7 +1136,6 @@ internal class Program
                     break;
                 }
             }
-            Console.WriteLine(customer.Rewards);
             //Displaying the membership status & points of the customer
             Console.WriteLine($"Membership status: {customer.Rewards.Tier}\n" +
                 $"Points: {customer.Rewards.Points}");
@@ -1144,6 +1144,7 @@ internal class Program
             if (customer.Dob.ToString("dd/MM") == DateTime.Now.ToString("dd/MM"))
             {
                 orderTotal -= mostExIceCreamPrice; //Making the most expensive ice cream in the order cost $0.00
+                Console.WriteLine($"It's customers [{customer.MemberId}]'s Birthday! The most expensive ice cream (${mostExIceCreamPrice}) is free!\n");
             }
 
             //Checking if customer has completed their punch card
@@ -1152,6 +1153,7 @@ internal class Program
             {
                 orderTotal -= firstIceCream.CalculatePrice(); //Making the first ice cream in the order $0.00
                 customer.Rewards.PunchCard = 0; //Resetting punch card back to 0
+                Console.WriteLine($"Customer [{customer.MemberId} has obtained 10 punches in his punch card. His first ice cream is free!");
             }
 
             //Checking point card status to determine if the customer can redeem points
@@ -1168,7 +1170,11 @@ internal class Program
 
                         if (pointsToRedeem <= customer.Rewards.Points) //Check if customer has sufficient points
                         {
-                            if ((pointsToRedeem * 0.02) > orderTotal) //Check if the pointsToRedeem price exceeds the order total
+                            if (pointsToRedeem == 0)
+                            {
+                                Console.WriteLine("No points have been redeemed.");
+                            }
+                            else if ((pointsToRedeem * 0.02) > orderTotal) //Check if the pointsToRedeem price exceeds the order total
                             {
                                 int newPointsToRedeem = Convert.ToInt32(Math.Ceiling(orderTotal / 0.02)); //Points to redeem after offsetting the leftover points
                                 int leftoverPoints = pointsToRedeem - newPointsToRedeem;
@@ -1303,7 +1309,8 @@ internal class Program
                     writer.WriteLine($"{order.Id},{customer.MemberId},{order.TimeReceived},{order.TimeFulfilled},{ic.Option},{ic.Scoops},{dipped},{waffleFlavour},{flavours}{toppings}");
                 }
             }
-            Console.WriteLine(customer.Rewards);
+            Console.WriteLine(customer.Rewards); //Printing out the new customer rewards
+            customer.CurrentOrder = new Order(); //Resetting the current order back to none
         }
 
         // Advanced feature b - Display monthly harged amounts breakdown & total charges amounts for the year

@@ -29,7 +29,6 @@ namespace S10256978_PRG2Assignment.Classes
             Name = n;
             MemberId = m;
             Dob = d;
-            CurrentOrder = new Order();
         }
 
         //Methods
