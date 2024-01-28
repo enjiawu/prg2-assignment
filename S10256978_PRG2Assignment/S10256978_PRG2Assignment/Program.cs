@@ -1435,6 +1435,7 @@ internal class Program
         InitCustomers(customerDict); //Reading data from customers.csv
         InitOrders(customerDict); //Reading data from orders.csv
 
+        /*
         Order order1 = new Order(12, DateTime.ParseExact("27/10/2023 13:28", "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture));
         //Order order1 = new Order(12, Convert.ToDateTime("27 / 10 / 2023 13:28"));
         List<Flavour> flavours = new List<Flavour>();
@@ -1444,7 +1445,7 @@ internal class Program
         IceCream ic = new Cone("Cone", 3, flavours, toppings, false);
         order1.AddIceCream(ic);
         regularQueue.Enqueue(order1);
-        customerDict[685582].CurrentOrder = order1;
+        customerDict[685582].CurrentOrder = order1;*/
 
         while (true) //While loop that keeps running until customer quits
         {
@@ -1461,7 +1462,7 @@ internal class Program
                 else if (option == 1) //Option 1 - List all customers
                 {
                     Console.WriteLine("\nOption 1 - List all customers");
-                    Console.WriteLine("------------------------------\n");
+                    Console.WriteLine("------------------------------");
                     DisplayAllCustomers(customerDict);
                 }
                 else if (option == 2) //Option 2 - List all current orders
@@ -1473,7 +1474,7 @@ internal class Program
                 else if (option == 3) //Option 3 - Register a new customer
                 {
                     Console.WriteLine("\nOption 3 - Register a new customer");
-                    Console.WriteLine("----------------------------------\n");
+                    Console.WriteLine("----------------------------------");
                     RegisterNewCustomer(customerDict);
                 }
                 else if (option == 4) //Option 4 - Create a customer's order
@@ -1485,7 +1486,7 @@ internal class Program
                 else if (option == 5) //Option 5 - Display the details of a customer
                 {
                     Console.WriteLine("\nOption 5 - Display order details of a customer");
-                    Console.WriteLine("-------------------------------------------------\n");
+                    Console.WriteLine("-------------------------------------------------");
                     ListOrderDetails(customerDict);
                 }
                 else if (option == 6) //Option 6 - Modify order details
