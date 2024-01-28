@@ -30,6 +30,7 @@ internal class Program
                 "[5] Display order details of a customer\n" +
                 "[6] Modify order details\n" +
                 "[7] Process an order and checkout\n" +
+                "[8] Display Monthly charged amounts breakdown & total charged amount for the year\n" +
                 "[0] Quit\n" +
                 "Enter option: ");
         }
@@ -70,7 +71,7 @@ internal class Program
         }
 
 
-        Dictionary<int, Customer> customerDict = new Dictionary<int, Customer>(); //List to keep keep of all the customer details
+        Dictionary<int, Customer> customerDict = new Dictionary<int, Customer>(); //List to keep of all the customer details
         void InitCustomers(Dictionary<int, Customer> customerDict)
         {
             using (StreamReader sr = new StreamReader("customers.csv"))
@@ -1286,6 +1287,67 @@ internal class Program
             Console.WriteLine(customer.Rewards);
         }
 
+        // Advanced feature b - Display monthly harged amounts breakdown & total charges amounts for the year
+        void displayChargedAmount(Dictionary<int, Customer> customerDict)
+        {
+            try
+            {
+                while (true)
+                {
+                    // prompt user for year
+                    Console.Write("Enter the year: ");
+
+                    if (int.TryParse(Console.ReadLine(), out int inputYear))
+                    {
+                        decimal[] monthlyAmounts = new decimal[12]; // Array to hold monthly amounts
+                        decimal totalAmount = 0;
+
+                        foreach (var customer in customerDict.Values)
+                        {
+                            foreach (var order in customer.OrderHistory)
+                            {
+                                if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Year == inputYear)
+                                {
+                                    int month = order.TimeFulfilled.Value.Month - 1; // Month index in array (0-based)
+
+                                    decimal orderAmount = Convert.ToDecimal(order.CalculateTotal()); // Ensure orderAmount is decimal
+
+                                    monthlyAmounts[month] += orderAmount;
+                                    totalAmount += orderAmount;
+                                }
+                            }
+                        }
+
+                        Console.WriteLine();
+
+                        // Display monthly amounts
+                        for (int i = 0; i < 12; i++)
+                        {
+                            string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(i + 1); // Get 3-letter month name
+                            Console.WriteLine($"{monthName} {inputYear}: {monthlyAmounts[i]:C}");
+                        }
+
+                        Console.WriteLine($"\nTotal {inputYear}: {totalAmount:C}");
+                        break;
+                    }
+                    else
+                    {
+                        throw new FormatException();
+                    }
+                }
+                
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Invalid input. Please enter a valid year.");
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Invalid input. The entered year is too large.");
+            }
+
+        }
+
         //Main Program
         InitFlavours(flavourData); //Reading data from flavours.csv
         InitToppings(toppingData); //Reading data from toppings.csv
@@ -1356,6 +1418,12 @@ internal class Program
                     Console.WriteLine("\nOption 7 - Process an order and checkout");
                     Console.WriteLine("--------------------------------------------");
                     ProcessCheckoutOrder();
+                }
+                else if (option == 8)
+                {
+                    Console.WriteLine("\nOption 8 - Display monthly charged amounts breakdown & total charged amounts for the year");
+                    Console.WriteLine("--------------------------------------------------------------------------------------------");
+                    displayChargedAmount(customerDict);
                 }
                 else
                 {
