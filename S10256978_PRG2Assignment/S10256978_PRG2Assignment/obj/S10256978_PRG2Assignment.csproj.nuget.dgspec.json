@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\enjia\\OneDrive\\Desktop\\Semester 2\\PRG2\\Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {}
+    "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {}
   },
   "projects": {
-    "C:\\Users\\enjia\\OneDrive\\Desktop\\Semester 2\\PRG2\\Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {
+    "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\enjia\\OneDrive\\Desktop\\Semester 2\\PRG2\\Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
+        "projectUniqueName": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
         "projectName": "S10256978_PRG2Assignment",
-        "projectPath": "C:\\Users\\enjia\\OneDrive\\Desktop\\Semester 2\\PRG2\\Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
-        "packagesPath": "C:\\Users\\enjia\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\enjia\\OneDrive\\Desktop\\Semester 2\\PRG2\\Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\obj\\",
+        "projectPath": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment.csproj",
+        "packagesPath": "C:\\Users\\WEN YA\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\WEN YA\\source\\repos\\prg2-assignment\\S10256978_PRG2Assignment\\S10256978_PRG2Assignment\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\enjia\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Users\\WEN YA\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
