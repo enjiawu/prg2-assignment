@@ -222,7 +222,7 @@ internal class Program
         }
 
         // Option 4 - Create customer order
-        void CreateCustomerOrder(Dictionary<int, Customer> customerDict)
+        void CreateCustomerOrder(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict)
         {
             try //Data validation
             {
@@ -249,7 +249,15 @@ internal class Program
 
                 // Get an order ID for customer
                 Console.Write("\nEnter order ID: ");
-                int orderId = Convert.ToInt32(Console.ReadLine());
+                int orderId;
+                
+                while (!int.TryParse(Console.ReadLine(), out orderId) || orderDict.ContainsKey(orderId))
+                {
+                    // Validate the entered order ID
+                    Console.WriteLine("Order ID already exists. Please enter a unique order ID.");
+                    Console.Write("Enter order ID: ");
+                }
+                
                 newOrder.Id = orderId;
 
                 // Set the current time as the received time for the order
@@ -1438,7 +1446,7 @@ internal class Program
                 {
                     Console.WriteLine("\nOption 4 - Create a customer's order");
                     Console.WriteLine("----------------------------------");
-                    CreateCustomerOrder(customerDict);
+                    CreateCustomerOrder(customerDict, orderDict);
                 }
                 else if (option == 5) //Option 5 - Display the details of a customer
                 {
