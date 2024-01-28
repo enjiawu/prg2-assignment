@@ -254,17 +254,31 @@ namespace S10256978_PRG2Assignment.Classes
 
                     if (quantity > 0) //Making sure user entered a quantity
                     {
-                        if (flavourData[flavourOption] > 0) //Check if ice cream is premium
+                        bool optionExists = false;
+                        foreach (Flavour f in flavours)
                         {
-                            Flavour newFlavour = new Flavour(flavourOption, true, quantity);
-                            flavours.Add(newFlavour); //adding flavour to flavours list
-                            Console.WriteLine("Flavour has been added.");
+                            if (f.Type == flavourOption)
+                            {
+                                f.Quantity += quantity; //Adding the quantity and not an entirely new flavour if the flavour already exists
+                                optionExists = true; //change option exists to true
+                                break;
+                            }
                         }
-                        else
+
+                        if (!optionExists)
                         {
-                            Flavour newFlavour = new Flavour(flavourOption, false, quantity);
-                            flavours.Add(newFlavour); //adding flavour to flavours list
-                            Console.WriteLine("Flavour has been added.");
+                            if (flavourData[flavourOption] > 0) //Check if ice cream is premium
+                            {
+                                Flavour newFlavour = new Flavour(flavourOption, true, quantity);
+                                flavours.Add(newFlavour); //adding flavour to flavours list
+                                Console.WriteLine("Flavour has been added.");
+                            }
+                            else
+                            {
+                                Flavour newFlavour = new Flavour(flavourOption, false, quantity);
+                                flavours.Add(newFlavour); //adding flavour to flavours list
+                                Console.WriteLine("Flavour has been added.");
+                            }
                         }
 
                         flavourCount += quantity; //Add the quantity to the number of flavours that have been added 
