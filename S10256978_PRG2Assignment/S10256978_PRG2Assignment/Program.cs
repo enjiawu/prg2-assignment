@@ -1110,7 +1110,11 @@ internal class Program
             Customer customer = new Customer();
             foreach (Customer c in customerDict.Values) //Iterating through customerDict
             {
-                if (c.CurrentOrder.Id == order.Id) //Checking if customer's current order id is the same as the checkout order id
+                if (c.CurrentOrder.Id == null)
+                {
+                    continue;
+                }
+                else if (c.CurrentOrder.Id == order.Id) //Checking if customer's current order id is the same as the checkout order id
                 {
                     customer = c; //If it is, assign customer for the order
                     break;
@@ -1375,7 +1379,7 @@ internal class Program
                 else if (option == 2) //Option 2 - List all current orders
                 {
                     Console.WriteLine("\nOption 2 - List all current orders");
-                    Console.WriteLine("----------------------------------\n");
+                    Console.WriteLine("----------------------------------");
                     ListCurrentOrders(regularQueue, goldMembersQueue);
                 }
                 else if (option == 3) //Option 3 - Register a new customer
