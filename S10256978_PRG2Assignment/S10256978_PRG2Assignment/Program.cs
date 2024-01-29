@@ -1113,7 +1113,7 @@ internal class Program
 
 
         //Advanced feature a - Process an order and checkout        
-        void ProcessCheckoutOrder(Dictionary<int, Order> orderDict, Dictionary<int, List<Order>> memberOrderDict)
+        void ProcessCheckoutOrder(Dictionary<int, Order> orderDict)
         {
             try
             {
@@ -1347,13 +1347,11 @@ internal class Program
                 Console.WriteLine(customer.Rewards); //Printing out the new customer rewards
                 customer.CurrentOrder = null; //Resetting the current order back to nothing
                 orderDict[order.Id] = order; //Updating order details
-                memberOrderDict[customer.MemberId].Add(order); //Adding completed order to the member order lists
             }
             catch (ArgumentException ex)
             {
                 Console.WriteLine("There are no current orders in the queue now. Try again after an order has been added.");
             }
-            
         }
 
         // Advanced feature b - Display monthly charged amounts breakdown & total charges amounts for the year
@@ -1475,7 +1473,7 @@ internal class Program
                 {
                     Console.WriteLine("\nOption 7 - Process an order and checkout");
                     Console.WriteLine("--------------------------------------------");
-                    ProcessCheckoutOrder(orderDict,memberOrderDict);
+                    ProcessCheckoutOrder(orderDict);
                 }
                 else if (option == 8)
                 {
