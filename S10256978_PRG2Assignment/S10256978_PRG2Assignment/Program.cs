@@ -1415,6 +1415,22 @@ internal class Program
 
         }
 
+        //Advanced C - Order tracking: Real-time queue visualization for customers to see their order position and estimated wait time
+        void OrderTracking()
+        {
+            /* 
+            Assuming that time taken to make ice cream is:
+            Waffle - 5 minutes
+            Cone/Cup - 0 minutes (Pre-prepared)
+            Scoop - 10 seconds * Number of scoops
+            Toppings - 5 seconds * Number of toppings
+            Wait time person at checkout - 15 second * Number of ice creams
+            */
+
+            Console.Write("Enter order number: ");
+
+        }
+
         //Main Program
         InitFlavours(flavourData); //Reading data from flavours.csv
         InitToppings(toppingData); //Reading data from toppings.csv
