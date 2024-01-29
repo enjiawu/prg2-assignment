@@ -419,12 +419,10 @@ internal class Program
 
                     Dictionary<string, int> flavourCount = new Dictionary<string, int>(); //Making dictionary to hold the quantity of each flavour
 
-                    flavourCount["Vanilla"] = 0;
-                    flavourCount["Chocolate"] = 0;
-                    flavourCount["Strawberry"] = 0;
-                    flavourCount["Durian"] = 0;
-                    flavourCount["Ube"] = 0;
-                    flavourCount["Sea Salt"] = 0;
+                    foreach(string flavour in flavourData.Keys) //iterating through every flavour available and assigning them to the dictionary flavour count to keep track of how many instances of each flavour
+                    {
+                        flavourCount[flavour] = 0;
+                    }
 
                     for (int i = 8; i <= 10; i++) //Check what flavours are included
                     {
@@ -435,17 +433,21 @@ internal class Program
                         flavourCount[line[i]]++; //Add quantity to flavour
                     }
 
-                    bool premium = false; //Boolean to see if flavour is premium
                     foreach (string flavour in flavourCount.Keys) //Iterating through flavourCount to see which flavours are in the order
                     {
+
                         if (flavourCount[flavour] != 0)
                         {
-                            if (flavour == "Durian" || flavour == "Ube" || flavour == "Sea salt") //Check if the flavour is premium or regular
+                            if (flavourData[flavour] > 0) //Check if ice cream is premium
                             {
-                                premium = true; //If premium, change premium value to true
+                                Flavour newFlavour = new Flavour(flavour, true, flavourCount[flavour]); //making a new flavour
+                                flavours.Add(newFlavour); //Add flavour to list of flavours for current ice cream
                             }
-                            Flavour flav = new Flavour(flavour, premium, flavourCount[flavour]); //Make new flavour 
-                            flavours.Add(flav); //Add flavour to list of flavours for current ice cream
+                            else
+                            {
+                                Flavour newFlavour = new Flavour(flavour, false, flavourCount[flavour]); //making a new flavour
+                                flavours.Add(newFlavour); //Add flavour to list of flavours for current ice cream
+                            } 
                         }
                     }
 
