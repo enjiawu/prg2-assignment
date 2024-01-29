@@ -34,6 +34,7 @@ internal class Program
                 "[6] Modify order details\n" +
                 "[7] Process an order and checkout\n" +
                 "[8] Display Monthly charged amounts breakdown & total charged amount for the year\n" +
+                "[9] Order tracking and queue visualization\n" +
                 "[0] Quit\n" +
                 "Enter option: ");
         }
@@ -1416,18 +1417,127 @@ internal class Program
         }
 
         //Advanced C - Order tracking: Real-time queue visualization for customers to see their order position and estimated wait time
-        void OrderTracking()
+        void OrderTracking(Queue<Order> regularQueue, Queue<Order> goldMembersQueue)
         {
             /* 
             Assuming that time taken to make ice cream is:
-            Waffle - 5 minutes
+            Waffle - 3 minutes
             Cone/Cup - 0 minutes (Pre-prepared)
             Scoop - 10 seconds * Number of scoops
             Toppings - 5 seconds * Number of toppings
             Wait time person at checkout - 15 second * Number of ice creams
             */
+            Dictionary<string, int> timeTaken = new Dictionary<string, int>(); //Dictionary to hold data of time taken for each ice cream
+            timeTaken["waffle"] = 3 * 60;
+            timeTaken["scoop"] = 10;
+            timeTaken["topping"] = 5;
+            timeTaken["checkout"] = 15;
 
-            Console.Write("Enter order number: ");
+            if (regularQueue.Count() == 0 && goldMembersQueue.Count() == 0) //Check if there are any others in the queue now
+            {
+                Console.WriteLine("There are currently no orders in the queue!");
+                return;
+            }
+
+            ListCurrentOrders(regularQueue, goldMembersQueue); //Printing out all the current orders
+
+            while (true)
+            {
+                try
+                {
+                    Console.Write("Enter order number (0 to cancel): ");
+                    int orderId = Convert.ToInt32(Console.ReadLine());
+                    Order order;
+
+                    if (orderId == 0) //break from while loop and return to main program
+                    {
+                        break;
+                    }
+
+                    bool orderUpdated = false; //Boolean to check if order has been updated
+                    int goldPosition = 0; //To keep track of number of orders in gold members queue before the order entered
+                    bool orderGoldQueue = false; //Boolean to keep track if order is in the gold queue 
+                    double waitingTime = 0; //To keep track of waiting time
+
+                    foreach(Order o in goldMembersQueue) //iterate through every order in the gold queue to find a matching order there
+                    {
+                        if (o.Id == orderId)
+                        {
+                            order = o; //update order details
+                            orderGoldQueue = true; //change to true
+                            orderUpdated = true; //change to true a
+                            break; //break from for loop
+                        }
+                        else
+                        {
+                            goldPosition++; 
+                        }
+
+                        //Calculating time taken for each order
+                        foreach (IceCream ic in o.IceCreamList)
+                        {
+                            if (ic.Option.ToLower() == "waffle") //if option is waffle, plus 3 minutes to waiting time
+                            {
+                                waitingTime += timeTaken["waffle"];
+                            }
+
+                            waitingTime += ic.Scoops * timeTaken["scoop"]; //add time for each scoop
+                            waitingTime += ic.Toppings.Count() * timeTaken["topping"]; //add time for each topping
+                            waitingTime += timeTaken["checkout"]; //adding checkout time per person
+                        }
+
+                    }
+
+                    int regularPosition = 0; //To keep track of number of orders in regular queue before the order entered
+                    if (orderGoldQueue != true)
+                    {
+                        foreach (Order o in regularQueue)
+                        {
+                            if (o.Id == orderId)
+                            {
+                                order = o; //update order details
+                                orderUpdated = true; //change to true
+                                break; //break from for loop
+                            }
+                            else
+                            {
+                                regularPosition++;
+                            }
+
+                            //Calculating time taken for each order
+                            foreach (IceCream ic in o.IceCreamList)
+                            {
+                                if (ic.Option.ToLower() == "waffle") //if option is waffle, plus 3 minutes to waiting time
+                                {
+                                    waitingTime += timeTaken["waffle"];
+                                }
+
+                                waitingTime += ic.Scoops * timeTaken["scoop"]; //add time for each scoop
+                                waitingTime += ic.Toppings.Count() * timeTaken["topping"]; //add time for each topping
+                                waitingTime += timeTaken["checkout"]; //adding checkout time per person
+                            }
+                        }
+
+                    }
+
+                    if (!orderUpdated)
+                    {
+                        throw new ArgumentOutOfRangeException(); //throw error that order could not be found
+                    }
+
+                    Console.WriteLine($"Order [{orderId}]\n" +
+                        $"There is currently [{regularPosition + goldPosition}] orders in front of order [{orderId}].\n" +
+                        $"The waiting time until order [{orderId}] is approximately {waitingTime / 60.0:f2} minutes.\n");
+                }
+                catch(FormatException ex)
+                {
+                    Console.WriteLine("Incorrect format! Please only enter a number!");
+                }
+                catch(ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("No such order exists in the current queues! Please only enter an order that exists!");
+                }
+            }
 
         }
 
@@ -1496,6 +1606,12 @@ internal class Program
                     Console.WriteLine("\nOption 8 - Display monthly charged amounts breakdown & total charged amounts for the year");
                     Console.WriteLine("--------------------------------------------------------------------------------------------");
                     displayChargedAmount(customerDict);
+                }
+                else if (option == 9)
+                {
+                    Console.WriteLine("\nOption 9 - Order tracking and queue visualization");
+                    Console.WriteLine("-----------------------------------------------------");
+                    OrderTracking(regularQueue, goldMembersQueue); 
                 }
                 else
                 {
