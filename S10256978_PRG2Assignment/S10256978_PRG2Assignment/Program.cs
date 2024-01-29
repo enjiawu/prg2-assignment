@@ -525,7 +525,7 @@ internal class Program
                     int count = 1;
                     foreach (Order order in selectedCustomer.OrderHistory) //Iterating through every order in the selected customer's order history
                     {
-                        Console.WriteLine($"[{count}] {order}"); //Printing out the order
+                        Console.WriteLine($"\n[{count}] {order}"); //Printing out the order
                         count++;
                     }
 
@@ -1346,8 +1346,8 @@ internal class Program
                 }
                 Console.WriteLine(customer.Rewards); //Printing out the new customer rewards
                 customer.CurrentOrder = null; //Resetting the current order back to nothing
-                orderDict[order.Id] = order; //updating order details
-                memberOrderDict[customer.MemberId].Add(order); //Adding order to the member order lists
+                orderDict[order.Id] = order; //Updating order details
+                memberOrderDict[customer.MemberId].Add(order); //Adding completed order to the member order lists
             }
             catch (ArgumentException ex)
             {
