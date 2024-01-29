@@ -33,7 +33,7 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         //Methods
-        public void ModifyIceCream(int i) 
+        public void ModifyIceCream(int i)  //function to modify ice cream
         {
             Dictionary<string, double> flavourData = Program.flavourData; //Dictionary to store information on flavour and respective cost
             Dictionary<string, double> toppingData = Program.toppingData; //Dictionary to store information on toppings and respective cost
@@ -77,7 +77,7 @@ namespace S10256978_PRG2Assignment.Classes
                     }
                     else
                     {
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(); //throw new error if option entered does not exist
                     }
                 }
                 catch (FormatException ex)
@@ -96,7 +96,7 @@ namespace S10256978_PRG2Assignment.Classes
                 
 
             Console.Write($"Current number of scoops: {icecream.Scoops}\n" +
-                    "----------------\n");
+                    "----------------\n"); //print out current number of scoops
             int scoops;
             while (true) //Data validation for number of scoops
             {
@@ -105,18 +105,18 @@ namespace S10256978_PRG2Assignment.Classes
                     Console.Write("Enter number of scoops (0 to continue): ");
                     scoops = Convert.ToInt32(Console.ReadLine());
 
-                    if (scoops == 0)
+                    if (scoops == 0) //check if scoops is 0, if it is continue
                     {
                         scoops = icecream.Scoops;
-                        break; //breaking the loop
+                        break; //breaking the loop and continuing with existing number of scoops
                     }
                     else if (scoops > 3 || scoops <= 0) //Check if number of scoops is between 1 and 3
                     {
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(); //throw new error if scoops is out of range
                     }
                     else
                     {
-                        break;
+                        break; //break from loop 
                     }
                 }
                 catch (FormatException ex)
@@ -143,9 +143,9 @@ namespace S10256978_PRG2Assignment.Classes
 
             for (int y = 0; y < scoops; y++) //getting flavours for new ice cream
             {
-                if (noFlavourUpdate)
+                if (noFlavourUpdate) //check if flavour does not want to be updated
                 {
-                    break;
+                    break; //break from loop if it does not
                 }
 
                 //Printing out available flavours
@@ -157,7 +157,7 @@ namespace S10256978_PRG2Assignment.Classes
 
                 Console.Write("Current Flavours:\n" + //Print out current flavours
                     "----------------\n" +
-                    $"{currentFlavours}\n");
+                    $"{currentFlavours}\n"); //printing out all current flavours
 
                 Console.Write("--------------------------\n" +
                             "Available Flavours\n" +
@@ -165,7 +165,7 @@ namespace S10256978_PRG2Assignment.Classes
                 foreach (string f in flavourData.Keys)
                 {
                     Console.WriteLine($"{f}");
-                }
+                } //printing out all available flavours
                 Console.WriteLine("Please enter all selected flavours including modified and existing ones.\n");
 
                 string flavourOption = " ";
@@ -197,14 +197,14 @@ namespace S10256978_PRG2Assignment.Classes
                                 flavourOption = char.ToUpper(flavourOption[0]) + flavourOption.Substring(1).ToLower(); //Capitalizing user input
                             }
 
-                            if (!flavourData.ContainsKey(flavourOption))
+                            if (!flavourData.ContainsKey(flavourOption)) //check if flavourdata contians flavour option
                             {
                                 Console.WriteLine("No such flavour exists!");
-                                throw new FormatException();
+                                throw new FormatException(); //throw new error if it does not
                             }
                             else
                             {
-                                break;
+                                break; //break if it does
                             }
                         }
                         catch (Exception ex)
@@ -230,7 +230,7 @@ namespace S10256978_PRG2Assignment.Classes
                             quantity = Convert.ToInt32(Console.ReadLine());
                             if (quantity > scoopCount || quantity < 0) //Making sure quantity of selected flavour does not exceed the number of scoops in the ice cream or is negative
                             {
-                                throw new ArgumentOutOfRangeException();
+                                throw new ArgumentOutOfRangeException(); //throw new error if quantity is not in range
                             }
                             {
                                 scoopCount -= quantity; //Deducting the number of scoops remaining 
@@ -257,7 +257,7 @@ namespace S10256978_PRG2Assignment.Classes
                         bool optionExists = false;
                         foreach (Flavour f in flavours)
                         {
-                            if (f.Type == flavourOption)
+                            if (f.Type == flavourOption) 
                             {
                                 f.Quantity += quantity; //Adding the quantity and not an entirely new flavour if the flavour already exists
                                 optionExists = true; //change option exists to true
@@ -265,7 +265,7 @@ namespace S10256978_PRG2Assignment.Classes
                             }
                         }
 
-                        if (!optionExists)
+                        if (!optionExists) //if the option doesn't exist yet
                         {
                             if (flavourData[flavourOption] > 0) //Check if ice cream is premium
                             {
@@ -330,7 +330,7 @@ namespace S10256978_PRG2Assignment.Classes
                                 noToppingUpdate = true; //change no topping update to true
                                 break;
                             }
-                            else if (toppingOption == "-1")
+                            else if (toppingOption == "-1") //check if user wants to remove all existing toppings
                             {
                                 break;
                             }
@@ -388,7 +388,7 @@ namespace S10256978_PRG2Assignment.Classes
                             }
                             else
                             {
-                                break;
+                                break; 
                             }
                         }
                         catch (FormatException ex)
@@ -493,7 +493,8 @@ namespace S10256978_PRG2Assignment.Classes
 
                             int waffleOption = Convert.ToInt32(Console.ReadLine());
 
-                            if (waffleOption == 0)
+                            //check what waffle option chosen
+                            if (waffleOption == 0) 
                             {
                                 break;
                             }
@@ -519,7 +520,7 @@ namespace S10256978_PRG2Assignment.Classes
                             }
                             else
                             {
-                                throw new ArgumentOutOfRangeException();
+                                throw new ArgumentOutOfRangeException(); //throw new error if option is out of range
                             }
                         }
                         catch (FormatException ex)
@@ -559,15 +560,15 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
 
-        public void AddIceCream(IceCream ic)
+        public void AddIceCream(IceCream ic) //Method to add new ice cream
         {
             IceCreamList.Add(ic);
         }
-        public void DeleteIceCream(int i)
+        public void DeleteIceCream(int i) //Method to delete ice cream
         {
             IceCreamList.RemoveAt(i - 1); //Removing at the index entered
         }
-        public double CalculateTotal()
+        public double CalculateTotal() //Method to calculate order total
         {
             double total = 0;
             foreach (IceCream icecream in IceCreamList)

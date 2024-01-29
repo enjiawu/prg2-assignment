@@ -1169,7 +1169,7 @@ internal class Program
                     $"Points: {customer.Rewards.Points}");
 
                 //Checking if its customer's birthday
-                if (customer.Dob.ToString("dd/MM") == DateTime.Now.ToString("dd/MM"))
+                if (customer.IsBirthday())
                 {
                     orderTotal -= mostExIceCreamPrice; //Making the most expensive ice cream in the order cost $0.00
                     Console.WriteLine($"It's customers [{customer.MemberId}]'s Birthday! The most expensive ice cream (${mostExIceCreamPrice}) is free!\n");
@@ -1202,6 +1202,10 @@ internal class Program
                                 {
                                     Console.WriteLine("No points have been redeemed.");
                                 }
+                                else if (pointsToRedeem < 0) //throw new error if points lesser than 0
+                                {
+                                    throw new ArgumentOutOfRangeException();
+                                }
                                 else if ((pointsToRedeem * 0.02) > orderTotal) //Check if the pointsToRedeem price exceeds the order total
                                 {
                                     int newPointsToRedeem = Convert.ToInt32(Math.Ceiling(orderTotal / 0.02)); //Points to redeem after offsetting the leftover points
@@ -1212,14 +1216,14 @@ internal class Program
                                 }
                                 else
                                 {
-                                    customer.Rewards.RedeemPoints(pointsToRedeem);
+                                    customer.Rewards.RedeemPoints(pointsToRedeem); //Redeem points
                                     orderTotal -= pointsToRedeem * 0.02; //Redeeming customers points (1 point = $0.02)
                                     Console.WriteLine($"{pointsToRedeem} points [${pointsToRedeem * 0.02:f2}] have been redeemed. Customer [{customer.MemberId}] has {customer.Rewards.Points} left.");
                                 }
                             }
                             else
                             {
-                                throw new ArgumentOutOfRangeException();
+                                throw new ArgumentOutOfRangeException(); //throw new error if points to redeem is not in range
                             }
                             break;
                         }
@@ -1234,11 +1238,11 @@ internal class Program
                     }
 
                 }
-                else if (customer.Rewards.Points == 0)
+                else if (customer.Rewards.Points == 0) //Check if customer has no points
                 {
                     Console.WriteLine($"Customer [{customer.MemberId}] has no points to redeem.");
                 }
-                else
+                else //Check if customer is eligible for point redeemption
                 {
                     Console.WriteLine($"Customer [{customer.MemberId}] is not eligible for points redemption!");
                 }
@@ -1251,9 +1255,9 @@ internal class Program
                 Console.ReadLine();
 
                 //Incrementing punch card for every ice cream in the order
-                foreach (IceCream ic in order.IceCreamList)
+                foreach (IceCream ic in order.IceCreamList) 
                 {
-                    customer.Rewards.Punch();
+                    customer.Rewards.Punch(); //Punch customer punch card
                 }
 
                 if (customer.Rewards.PunchCard > 10) //Checking if customer punch card has more than 10 punches
@@ -1266,11 +1270,11 @@ internal class Program
                 customer.Rewards.AddPoints(pointsToAdd);
 
                 //Updating member status 
-                if (customer.Rewards.Points >= 100)
+                if (customer.Rewards.Points >= 100) //Update to gold if reward points greater or equals to 100
                 {
                     customer.Rewards.Tier = "Gold";
                 }
-                else if (customer.Rewards.Points >= 50)
+                else if (customer.Rewards.Points >= 50 && customer.Rewards.Tier != "Gold") //Upgrade to silver is reward points greater or equals to 50 and the customer tier is not gold
                 {
                     customer.Rewards.Tier = "Silver";
                 }
@@ -1310,7 +1314,7 @@ internal class Program
                             flavours += $"{f.Type},"; //stringing it together
                             flavourCount++; //increment flavour count by 1
                         }
-                        if (flavourCount < 3)
+                        if (flavourCount < 3) //Check if flavour count is lesser than 3, if it is then just append ','
                         {
                             for (int i = 0; i < (3 - flavourCount); i++)
                             {
@@ -1326,7 +1330,7 @@ internal class Program
                             toppings += $"{t.Type},"; //stringing it together
                             toppingCount++; //increment flavour count by 1
                         }
-                        if (toppingCount < 3)
+                        if (toppingCount < 3) //Check if toppings is lesser than 3 , if it is then just append ',' (leave out the last comma)
                         {
                             for (int i = 0; i < (3 - toppingCount); i++)
                             {

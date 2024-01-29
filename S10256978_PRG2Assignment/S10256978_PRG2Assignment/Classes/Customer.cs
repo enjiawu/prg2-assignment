@@ -32,19 +32,18 @@ namespace S10256978_PRG2Assignment.Classes
         }
 
         //Methods
-        public Order MakeOrder() 
+        public Order MakeOrder() //Method to make new order for customer
         {
             CurrentOrder = new Order(MemberId, DateTime.Now); //Make new order
-            OrderHistory.Add(CurrentOrder); //Add into order history
             return CurrentOrder;
         }
-        public bool IsBirthday()
+        public bool IsBirthday() //Check if it is customers birthday
         {
-            if (Dob == DateTime.Now) //Check if today is birthday
+            if (Dob.ToString("dd/MM") == DateTime.Now.ToString("dd/MM")) //Check if today is birthday
             {
-                return true;
+                return true; //Return true if it is
             }
-            return false;
+            return false; //Return false if it is not
         }
 
         public override string ToString()

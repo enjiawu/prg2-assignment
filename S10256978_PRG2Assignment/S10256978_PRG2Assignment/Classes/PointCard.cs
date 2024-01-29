@@ -28,11 +28,11 @@ namespace S10256978_PRG2Assignment.Classes
         }
         
         //Methods
-        public void AddPoints(int p)
+        public void AddPoints(int p) //Method to add points
         {
             Points += p;
         }
-        public void RedeemPoints(int p)
+        public void RedeemPoints(int p) //Method to redeem points
         {
             Points -= p;
         }
