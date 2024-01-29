@@ -1348,7 +1348,6 @@ internal class Program
                 customer.CurrentOrder = null; //Resetting the current order back to nothing
                 orderDict[order.Id] = order; //updating order details
                 memberOrderDict[customer.MemberId].Add(order); //Adding order to the member order lists
-                customerDict[customer.MemberId].OrderHistory.Add(order); //Adding order into the customer's order history
             }
             catch (ArgumentException ex)
             {
