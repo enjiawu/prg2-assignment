@@ -7,11 +7,14 @@
 using Microsoft.VisualBasic.FileIO;
 using S10256978_PRG2Assignment.Classes;
 using System.ComponentModel.Design;
+using System.Data.Common;
 using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
+
 internal class Program
 {
     //Defining methods to be used for different classes and the main program
@@ -363,7 +366,7 @@ internal class Program
         Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order
         Dictionary<int, List<Order>> memberOrderDict = new Dictionary<int, List<Order>>(); //Dictionary to keep track of which orders are under which member
 
-        void InitOrders(Dictionary<int, Customer> customerDict)
+        void InitOrders(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict, Dictionary<int, List<Order>> memberOrderDict)
         //Method to initialize orders from orders.csv and add them to respective members
         {
             using (StreamReader sr = new StreamReader("orders.csv"))
@@ -1109,8 +1112,8 @@ internal class Program
         }
 
 
-        //Advanced feature a - Process an order and checkout
-        void ProcessCheckoutOrder()
+        //Advanced feature a - Process an order and checkout        
+        void ProcessCheckoutOrder(Dictionary<int, Order> orderDict, Dictionary<int, List<Order>> memberOrderDict)
         {
             try
             {
@@ -1343,6 +1346,9 @@ internal class Program
                 }
                 Console.WriteLine(customer.Rewards); //Printing out the new customer rewards
                 customer.CurrentOrder = null; //Resetting the current order back to nothing
+                orderDict[order.Id] = order; //updating order details
+                memberOrderDict[customer.MemberId].Add(order); //Adding order to the member order lists
+                customerDict[customer.MemberId].OrderHistory.Add(order); //Adding order into the customer's order history
             }
             catch (ArgumentException ex)
             {
@@ -1416,7 +1422,7 @@ internal class Program
         InitFlavours(flavourData); //Reading data from flavours.csv
         InitToppings(toppingData); //Reading data from toppings.csv
         InitCustomers(customerDict); //Reading data from customers.csv
-        InitOrders(customerDict); //Reading data from orders.csv
+        InitOrders(customerDict, orderDict, memberOrderDict); //Reading data from orders.csv
 
         while (true) //While loop that keeps running until customer quits
         {
@@ -1470,7 +1476,7 @@ internal class Program
                 {
                     Console.WriteLine("\nOption 7 - Process an order and checkout");
                     Console.WriteLine("--------------------------------------------");
-                    ProcessCheckoutOrder();
+                    ProcessCheckoutOrder(orderDict,memberOrderDict);
                 }
                 else if (option == 8)
                 {
