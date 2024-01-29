@@ -228,139 +228,152 @@ internal class Program
         // Option 4 - Create customer order
         void CreateCustomerOrder(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict)
         {
-            try //Data validation
+            while (true)
             {
-                // Display available customers
-                Console.WriteLine("\nSelect a customer by entering their Member ID:");
-                foreach (var kvp in customerDict) 
+                try //Data validation
                 {
-                    Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
-                }
-
-                // Create a new order for the selected customer
-                Order newOrder = new Order();
-
-                // Get member id
-                Console.Write("\nEnter Member ID: ");
-                int memberId;
-                while (!int.TryParse(Console.ReadLine(), out memberId) || !customerDict.ContainsKey(memberId))
-                {
-                    // Validate the entered ID
-                    Console.WriteLine("Invalid Member ID. Please enter a valid Member ID.");
-                    Console.Write("Enter Member ID: ");
-                }
-
-
-                // Get an order ID for customer
-                Console.Write("\nEnter order ID: ");
-                int orderId;
-                
-                while (!int.TryParse(Console.ReadLine(), out orderId) || orderDict.ContainsKey(orderId))
-                {
-                    // Validate the entered order ID
-                    Console.WriteLine("Order ID already exists. Please enter a unique order ID.");
-                    Console.Write("Enter order ID: ");
-                }
-                
-                newOrder.Id = orderId;
-
-                // Set the current time as the received time for the order
-                DateTime timeReceived = DateTime.Now;
-                newOrder.TimeReceived = timeReceived;
-
-
-                while (true)
-                {
-                    try
+                    // Display available customers
+                    Console.WriteLine("\nSelect a customer by entering their Member ID:");
+                    foreach (var kvp in customerDict)
                     {
-                        AddNewIceCream(newOrder);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Handle the error appropriately, e.g., prompt for retry or exit
-                        Console.WriteLine("Error adding ice cream:");
-                        Console.WriteLine(ex.Message);
+                        Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
                     }
 
-                    // prompt user if they want to add another icecream
-                    string addAnotherIcecream;
-                    while (true)
+
+                    // Get member id
+                    Console.Write("\nEnter Member ID (0 to exit): ");
+                    int memberId;
+
+                    while (!int.TryParse(Console.ReadLine(), out memberId) || !customerDict.ContainsKey(memberId) || memberId == 0 )
                     {
-                        Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
-                        addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
-                        if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
-                        {
-                            Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
-                        }
-                        else
+                        if (memberId == 0)
                         {
                             break;
                         }
+                        else
+                        {
+                            Console.WriteLine($"Invalid Member ID [{memberId}]. Please enter a valid Member ID.");
+                            Console.Write("Enter Member ID (0 to exit): ");
+                        }
                     }
 
-                    if (addAnotherIcecream == "Y")
+                    if (memberId == 0)
                     {
-                        Console.WriteLine("You choose to add another ice cream.\n");
-                        // Continue the loop to add another ice cream
-                    }
-                    else if (addAnotherIcecream == "N")
-                    {
-                        // Break out of the loop
+                        Console.WriteLine("Exiting Create Customer Order option.");
                         break;
                     }
 
+                    // Get an order ID for customer
+                    Console.Write("\nEnter order ID: ");
+                    int orderId;
 
+                    while (!int.TryParse(Console.ReadLine(), out orderId) || orderDict.ContainsKey(orderId))
+                    {
+                        // Validate the entered order ID
+                        Console.WriteLine($"Order ID [{orderId}] already exists. Please enter a different order ID.");
+                        Console.Write("Enter order ID: ");
+                    }
+
+                    // Create a new order for the selected customer using the MakeOrder method
+                    Order newOrder = customerDict[memberId].MakeOrder();
+                    newOrder.Id = orderId;
+                    newOrder.TimeReceived = DateTime.Now;
+
+
+                    while (true)
+                    {
+                        try
+                        {
+                            AddNewIceCream(newOrder);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Handle the error appropriately, e.g., prompt for retry or exit
+                            Console.WriteLine("Error adding ice cream:");
+                            Console.WriteLine(ex.Message);
+                        }
+
+                        // prompt user if they want to add another icecream
+                        string addAnotherIcecream;
+                        while (true)
+                        {
+                            Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
+                            addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
+                            if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
+                            {
+                                Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (addAnotherIcecream == "Y")
+                        {
+                            Console.WriteLine("You choose to add another ice cream.\n");
+                            // Continue the loop to add another ice cream
+                        }
+                        else if (addAnotherIcecream == "N")
+                        {
+                            // Break out of the loop
+                            break;
+                        }
+
+
+                    }
+
+                    // Link the new order to the customer's current order
+                    if (customerDict.TryGetValue(memberId, out var selectedCustomer))
+                    {
+                        selectedCustomer.CurrentOrder = newOrder;
+                    }
+
+
+                    // Determine the Pointcard tier and append the order to the appropriate queue
+                    if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
+                    {
+                        goldMembersQueue.Enqueue(newOrder);
+                        Console.WriteLine("Order added to Gold Member Queue.");
+                    }
+                    else
+                    {
+                        regularQueue.Enqueue(newOrder);
+                        Console.WriteLine("Order added to Regular Queue.");
+                    }
+
+                    // Display order details directly in CreateCustomerOrder
+                    Console.WriteLine("Order Details:");
+                    Console.WriteLine($"Order ID: {newOrder.Id}");
+                    Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
+
+                    // Print ice cream details
+                    foreach (var iceCream in newOrder.IceCreamList)
+                    {
+                        Console.WriteLine($"Ice Cream: {iceCream}");
+                    }
+
+                    Console.WriteLine("Order made successfully!\n");
+
+                    Console.WriteLine(newOrder.ToString());
+                    foreach (Order order in regularQueue)
+                    {
+                        Console.WriteLine($"{order}");
+                    }
+                    foreach (Order order in goldMembersQueue)
+                    {
+                        Console.WriteLine($"{order}");
+                    }
                 }
-
-                // Link the new order to the customer's current order
-                if (customerDict.TryGetValue(memberId, out var selectedCustomer))
+                catch (Exception ex)
                 {
-                    selectedCustomer.CurrentOrder = newOrder;
+                    // Log the exception for debugging or troubleshooting
+                    Console.WriteLine("An unexpected error occurred:");
+                    Console.WriteLine(ex.Message);
                 }
-
-
-                // Determine the Pointcard tier and append the order to the appropriate queue
-                if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
-                {
-                    goldMembersQueue.Enqueue(newOrder);
-                    Console.WriteLine("Order added to Gold Member Queue.");
-                }
-                else
-                {
-                    regularQueue.Enqueue(newOrder);
-                    Console.WriteLine("Order added to Regular Queue.");
-                }
-
-                // Display order details directly in CreateCustomerOrder
-                Console.WriteLine("Order Details:");
-                Console.WriteLine($"Order ID: {newOrder.Id}");
-                Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
-
-                // Print ice cream details
-                foreach (var iceCream in newOrder.IceCreamList)
-                {
-                    Console.WriteLine($"Ice Cream: {iceCream}");
-                }
-
-                Console.WriteLine("Order made successfully!\n");
-
-                Console.WriteLine(newOrder.ToString());
-                foreach (Order order in regularQueue)
-                {
-                    Console.WriteLine($"{order}");
-                }
-                foreach (Order order in goldMembersQueue)
-                {
-                    Console.WriteLine($"{order}");
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception for debugging or troubleshooting
-                Console.WriteLine("An unexpected error occurred:");
-                Console.WriteLine(ex.Message);
             }
         }
+            
 
 
         //Option 5 - Display order details of a customers
