@@ -1535,7 +1535,7 @@ internal class Program
                     }
 
                     Console.WriteLine($"Order [{orderId}]\n" +
-                        $"There is currently [{regularPosition + goldPosition}] orders in front of order [{orderId}].\n" +
+                        $"There are currently [{regularPosition + goldPosition}] orders in front of order [{orderId}].\n" +
                         $"The waiting time until order [{orderId}] is approximately {waitingTime / 60.0:f2} minutes.\n");
                 }
                 catch(FormatException ex)
