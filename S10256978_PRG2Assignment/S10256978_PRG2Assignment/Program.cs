@@ -663,7 +663,7 @@ internal class Program
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Please enter one of the available options!");
+                    Console.WriteLine("Format Error! Please enter one of the available options!");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
@@ -699,7 +699,7 @@ internal class Program
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    Console.WriteLine("Please enter an option from 1-3.");
+                    Console.WriteLine("Option is out of range! Please enter an option from 1-3.");
                 }
                 catch (Exception ex)
                 {
