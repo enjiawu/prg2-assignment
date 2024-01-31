@@ -563,7 +563,6 @@ namespace S10256978_PRG2Assignment.Classes
             }
         }
 
-
         public void AddIceCream(IceCream ic) //Method to add new ice cream
         {
             IceCreamList.Add(ic);
@@ -580,6 +579,25 @@ namespace S10256978_PRG2Assignment.Classes
                 total += icecream.CalculatePrice();
             }
             return total;
+        }
+
+        public double CalculateWaitingTime(Dictionary<string, int> timeTaken) // Method to calculate waiting time
+        {
+            double waitingTime = 0;
+            //Calculating time taken for each order
+            foreach (IceCream ic in IceCreamList)
+            {
+                if (ic.Option.ToLower() == "waffle") //if option is waffle, plus 3 minutes to waiting time
+                {
+                    waitingTime += timeTaken["waffle"];
+                }
+        
+                // Add waiting time for scoops and toppings
+                waitingTime += ic.Scoops * timeTaken["scoop"]; //add time for each scoop
+                waitingTime += ic.Toppings.Count() * timeTaken["topping"]; //add time for each topping
+                waitingTime += timeTaken["checkout"]; //adding checkout time per person
+            }
+            return waitingTime; // Add waiting time for checkout
         }
 
         public override string ToString()

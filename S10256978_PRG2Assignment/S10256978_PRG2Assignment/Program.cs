@@ -1545,27 +1545,14 @@ internal class Program
                         {
                             order = o; //update order details
                             orderGoldQueue = true; //change to true
-                            orderUpdated = true; //change to true a
+                            orderUpdated = true; //change to true
+                            waitingTime = order.CalculateWaitingTime(timeTaken); // Calculate the waiting time for the order based on the time taken for each ice cream
                             break; //break from for loop
                         }
                         else
                         {
                             goldPosition++; 
                         }
-
-                        //Calculating time taken for each order
-                        foreach (IceCream ic in o.IceCreamList)
-                        {
-                            if (ic.Option.ToLower() == "waffle") //if option is waffle, plus 3 minutes to waiting time
-                            {
-                                waitingTime += timeTaken["waffle"];
-                            }
-
-                            waitingTime += ic.Scoops * timeTaken["scoop"]; //add time for each scoop
-                            waitingTime += ic.Toppings.Count() * timeTaken["topping"]; //add time for each topping
-                            waitingTime += timeTaken["checkout"]; //adding checkout time per person
-                        }
-
                     }
 
                     int regularPosition = 0; //To keep track of number of orders in regular queue before the order entered
@@ -1577,27 +1564,14 @@ internal class Program
                             {
                                 order = o; //update order details
                                 orderUpdated = true; //change to true
+                                waitingTime = order.CalculateWaitingTime(timeTaken); // Calculate the waiting time for the order based on the time taken for each ice cream
                                 break; //break from for loop
                             }
                             else
                             {
                                 regularPosition++;
                             }
-
-                            //Calculating time taken for each order
-                            foreach (IceCream ic in o.IceCreamList)
-                            {
-                                if (ic.Option.ToLower() == "waffle") //if option is waffle, plus 3 minutes to waiting time
-                                {
-                                    waitingTime += timeTaken["waffle"];
-                                }
-
-                                waitingTime += ic.Scoops * timeTaken["scoop"]; //add time for each scoop
-                                waitingTime += ic.Toppings.Count() * timeTaken["topping"]; //add time for each topping
-                                waitingTime += timeTaken["checkout"]; //adding checkout time per person
-                            }
                         }
-
                     }
 
                     if (!orderUpdated)
@@ -1605,9 +1579,42 @@ internal class Program
                         throw new ArgumentOutOfRangeException(); //throw error that order could not be found
                     }
 
-                    Console.WriteLine($"Order [{orderId}]\n" +
+                    Console.WriteLine($"\nOrder [{orderId}]\n" +
                         $"There are currently [{regularPosition + goldPosition}] orders in front of order [{orderId}].\n" +
                         $"The waiting time until order [{orderId}] is approximately {waitingTime / 60.0:f2} minutes.\n");
+                    while(true)
+                    {
+                        try
+                        {
+                            // Start countdown timer
+                            Console.Write("Do you want to start to countdown your waiting time? (Y/N): ");
+                            string startCountdown = Console.ReadLine().ToUpper();
+                    
+                            if (startCountdown == "Y") // Check if the user chose to start the countdown
+                            {
+                                Console.WriteLine("Countdown started (you can press any key to stop countdown):");
+                                CountdownTimer((int)waitingTime); // Start the countdown timer
+                                break; // Exit the loop if the countdown is completed
+                            }
+                            else if (startCountdown == "N") // Check if the user chose not to start the countdown
+                            {
+                                Console.WriteLine("You choose not to start the countdown.\n");
+                                break; // Exit the loop
+                            }
+                            else
+                            {
+                                throw new ArgumentException();
+                            }
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Console.WriteLine("Invalid input. Please enter 'Y' to start or 'N' to skip countdown.\n");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                        }
+                    }  
                 }
                 catch(FormatException ex)
                 {
@@ -1622,7 +1629,27 @@ internal class Program
                     Console.WriteLine("An unexpected error has occurred: " + ex.Message);
                 }
             }
+        }
 
+        void CountdownTimer(int seconds)
+        {
+            while (seconds > 0)
+            {
+                if (Console.KeyAvailable) // check if key is available
+                {
+                    Console.ReadKey(true); // Consume the key
+                    Console.WriteLine("Countdown stopped.\n");
+                    return; // exit the countdowntimer function if any key is pressed
+                }
+        
+                Console.WriteLine($"Time remaining: {seconds} seconds"); // display the remaining time
+                Thread.Sleep(1000); // pause for one second
+                seconds--; // decrement the remaining time 
+            }
+        
+            // display message when the countdown reaches zero
+            Console.WriteLine($"\nOrder ready!" +
+                $"\nYou can collect your icecream and make your payment now.");
         }
 
         //Main Program
