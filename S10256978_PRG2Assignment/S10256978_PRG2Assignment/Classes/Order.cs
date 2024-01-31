@@ -588,7 +588,7 @@ namespace S10256978_PRG2Assignment.Classes
             return $"Order ID: {Id}\n" +
                 $"Time Received: {TimeReceived}\n" +
                 $"Time Fulfilled: {TimeFulfilled}\n" +
-                $"Ice Cream Details:\n{icecreams}";
+                $"Ice Cream Details:{icecreams}\n";
         }
     }
 }

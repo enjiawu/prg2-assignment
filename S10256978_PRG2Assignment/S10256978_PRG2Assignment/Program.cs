@@ -284,9 +284,9 @@ internal class Program
                     do
                     {
                         orderId = orderIdCounter++;
-                    } while (orderIdQueue.Contains(orderId));
+                    } while (orderDict.Keys.Contains(orderId));
 
-                    orderIdQueue.Enqueue(orderId);
+                    //orderIdQueue.Enqueue(orderId);
 
 
                     // Create a new order for the selected customer using the MakeOrder method
@@ -386,7 +386,7 @@ internal class Program
 
 
         //Option 5 - Display order details of a customers
-        Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order
+        Dictionary<int, Order> orderDict = new Dictionary<int, Order>(); //Dictionary to keep track of which ice creams are in the same order and for keeping track of orders and their order id
         Dictionary<int, List<Order>> memberOrderDict = new Dictionary<int, List<Order>>(); //Dictionary to keep track of which orders are under which member
 
         void InitOrders(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict, Dictionary<int, List<Order>> memberOrderDict)
@@ -549,7 +549,7 @@ internal class Program
                     int count = 1;
                     foreach (Order order in selectedCustomer.OrderHistory) //Iterating through every order in the selected customer's order history
                     {
-                        Console.WriteLine($"\n[{count}] {order}"); //Printing out the order
+                        Console.WriteLine($"[{count}] {order}\n"); //Printing out the order
                         count++;
                     }
 
