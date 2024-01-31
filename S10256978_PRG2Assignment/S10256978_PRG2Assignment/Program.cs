@@ -1598,7 +1598,7 @@ internal class Program
                             }
                             else if (startCountdown == "N") // Check if the user chose not to start the countdown
                             {
-                                Console.WriteLine("You cho0se not to start the countdown.\n");
+                                Console.WriteLine("You choose not to start the countdown.\n");
                                 break; // Exit the loop
                             }
                             else
