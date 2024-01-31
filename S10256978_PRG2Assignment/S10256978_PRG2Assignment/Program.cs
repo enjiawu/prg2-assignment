@@ -200,12 +200,12 @@ internal class Program
                 // Try to parse the user input as a DateTime, and store the result in the 'dob' variable.
                 isValidDate = DateTime.TryParse(input, out dob);
 
-                if (!isValidDate || dob > DateTime.Today) // Check if the date input is not valid or is later than today
+                if (!isValidDate || dob > DateTime.Now.Date) // Check if the date input is not valid or is later than today
                 {
                     Console.WriteLine("Invalid date format. Please enter a valid date not later than today.");
                 }
 
-            } while (!isValidDate);
+            } while (!isValidDate || dob > DateTime.Now.Date);
 
             // Create a new customer object
             Customer newCustomer = new Customer(name, memberId, dob);
