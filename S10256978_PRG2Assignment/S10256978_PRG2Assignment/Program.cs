@@ -149,8 +149,7 @@ internal class Program
             Console.Write("Enter customer name (0 to cancel): "); // Prompt user for customer information - customer name
             string name = Convert.ToString(Console.ReadLine());
 
-            // Check if the user wants to exit
-            if (name == "0")
+            if (name == "0") // Check if the user wants to exit
             {
                 Console.WriteLine("Exiting customer registration.");
                 return;
@@ -159,12 +158,11 @@ internal class Program
             int memberId;
             while (true)
             {
-                try
+                try // data validation
                 {
-                    // Prompt user to give a customer ID number
-                    Console.Write("Enter customer ID number: ");
-                    // Try to parse the user input as an integer and assign it to the memberId variable.
-                    if (int.TryParse(Console.ReadLine(), out memberId))
+                    Console.Write("Enter customer ID number: "); // Prompt user to give a customer ID number
+
+                    if (int.TryParse(Console.ReadLine(), out memberId)) // Try to parse the user input as an integer and assign it to the memberId variable.
                     {
                         if (customerDict.ContainsKey(memberId)) //Check the customer ID is it exists
                         {
@@ -182,27 +180,31 @@ internal class Program
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Please enter a ");
+                    Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
                     Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
                 }
             }
 
             DateTime dob;
             bool isValidDate = false;
 
+            // Repeat the loop until a valid DOB is entered
             do
             {
-                // prompt user to enter DOB for customer
-                Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
+                Console.Write("Enter customer date of birth (dd/MM/yyyy): "); // prompt user to enter DOB for customer
                 string input = Console.ReadLine();
 
                 // Try to parse the user input as a DateTime, and store the result in the 'dob' variable.
                 isValidDate = DateTime.TryParse(input, out dob);
 
-                if (!isValidDate)
+                if (!isValidDate) // Check if the date input is not valid
                 {
                     Console.WriteLine("Invalid date format. Please enter a valid date.");
                 }
@@ -229,8 +231,10 @@ internal class Program
             DisplayAllCustomers(customerDict);
         }
 
+        // Append customer information to the order.csv file
         void AppendCustomerToCsv(Customer customer)
         {
+            // Open StreamWriter to append data to the "customers.csv" file
             using (StreamWriter writer = new StreamWriter("customers.csv", true))
             {
                 writer.WriteLine($"{customer.Name},{customer.MemberId},{customer.Dob.ToString("dd/MM/yyyy")},{customer.Rewards.Tier},{customer.Rewards.Points},{customer.Rewards.PunchCard}");
@@ -243,149 +247,158 @@ internal class Program
         {
             while (true)
             {
-                try //Data validation
+
+                // Display available customers
+                Console.WriteLine("\nSelect a customer by entering their Member ID:");
+                foreach (var kvp in customerDict) // Iterate through the key-value pairs (kvp) in the customer dictionary.
                 {
-                    // Display available customers
-                    Console.WriteLine("\nSelect a customer by entering their Member ID:");
-                    foreach (var kvp in customerDict)
+                    Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}"); // Output the Member ID and corresponding customer name to the console.
+                }
+
+                Console.Write("\nEnter Member ID (0 to exit): "); // Get member id
+                int memberId;
+
+                while (true)
+                {
+                    try // data validation
                     {
-                        Console.WriteLine($"{kvp.Key}: {kvp.Value.Name}");
-                    }
+                        string input = Console.ReadLine();
 
-
-                    // Get member id
-                    Console.Write("\nEnter Member ID (0 to exit): ");
-                    int memberId;
-
-                    while (!int.TryParse(Console.ReadLine(), out memberId) || !customerDict.ContainsKey(memberId) || memberId == 0 )
-                    {
-                        if (memberId == 0)
+                        if (input == "0") // Check if the input is "0" to exit the Create Customer Order option.
                         {
-                            break;
+                            Console.WriteLine("Exiting Create Customer Order option.");
+                            return; // Exit the method
                         }
-                        else
+
+                        memberId = int.Parse(input); // Parse the input to an integer to represent the Member ID.
+
+                        if (!customerDict.ContainsKey(memberId)) // Check if the Member ID is not in the dictionary
                         {
                             Console.WriteLine($"Invalid Member ID [{memberId}]. Please enter a valid Member ID.");
                             Console.Write("Enter Member ID (0 to exit): ");
                         }
+                        else
+                        {
+                            break; // Exit the loop if the input is valid
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        // Handle the FormatException if the input is not a valid integer.
+                        Console.WriteLine("Invalid input. Please enter a valid integer for the Member ID.");
+                        Console.Write("Enter Member ID (0 to exit): ");
+                    }
+                }
+
+                var selectedCustomer = customerDict[memberId]; // Retrieve the selected customer using the entered Member ID.
+                // Check if the selected customer already has a current order in progress.
+                if (selectedCustomer.CurrentOrder != null)
+                {
+                    Console.WriteLine("Customer already has an existing order in progress. Please choose a different customer ID.");
+                    continue; // Skip to the next iteration of the loop
+                }
+
+
+                int orderIdCounter = 1; // Initialize a counter for order IDs
+                int orderId; // Declare a variable to store the generated order ID.
+
+                // Generate a unique order ID by incrementing the counter until a unique ID is found.
+                do
+                {
+                    orderId = orderIdCounter++; // Assign the current value of orderIdCounter to orderId, then increment the counter.
+                } while (orderDict.Keys.Contains(orderId));
+
+                // Create a new order for the selected customer using the MakeOrder method
+                Order newOrder = customerDict[memberId].MakeOrder();
+                newOrder.Id = orderId; // Assign the generated order ID to the new order.
+                newOrder.TimeReceived = DateTime.Now; // Set the time the order was received to the current date and time.
+
+
+                while (true) 
+                {
+                    try // data validation
+                    {
+                        AddNewIceCream(newOrder); // Attempt to add a new ice cream to the order
+                    }
+                    catch (Exception ex)
+                    {
+                        // Handle any errors that occur during ice cream addition
+                        Console.WriteLine("Error adding ice cream:");
+                        Console.WriteLine(ex.Message);
                     }
 
-                    if (memberId == 0)
-                    {
-                        Console.WriteLine("Exiting Create Customer Order option.");
-                        break;
-                    }
-
-                    var selectedCustomer = customerDict[memberId];
-                    if (selectedCustomer.CurrentOrder != null)
-                    {
-                        Console.WriteLine("Customer already has an existing order in progress. Please choose a different customer ID.");
-                        continue; // Skip to the next iteration of the loop
-                    }
-
-
-                    int orderIdCounter = 1; // Initialize a counter for order IDs
-                    int orderId;
-
-                    do
-                    {
-                        orderId = orderIdCounter++;
-                    } while (orderDict.Keys.Contains(orderId));
-
-
-
-                    // Create a new order for the selected customer using the MakeOrder method
-                    Order newOrder = customerDict[memberId].MakeOrder();
-                    newOrder.Id = orderId;
-                    newOrder.TimeReceived = DateTime.Now;
-
-
+                    // prompt user if they want to add another icecream
+                    string addAnotherIcecream;
                     while (true)
                     {
                         try
                         {
-                            AddNewIceCream(newOrder);
-                        }
-                        catch (Exception ex)
-                        {
-                            // Handle the error appropriately, e.g., prompt for retry or exit
-                            Console.WriteLine("Error adding ice cream:");
-                            Console.WriteLine(ex.Message);
-                        }
-
-                        // prompt user if they want to add another icecream
-                        string addAnotherIcecream;
-                        while (true)
-                        {
+                            // Prompt user and convert input to uppercase
                             Console.Write("\nWould you like to add another ice cream to the order? (Y/N): ");
-                            addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
-                            if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
+                            addAnotherIcecream = Console.ReadLine().ToUpper();
+
+                            if (addAnotherIcecream != "Y" && addAnotherIcecream != "N") // Validate input and break if it's 'Y' or 'N'
                             {
                                 Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
                             }
                             else
                             {
-                                break;
+                                break; // Exit the loop if the input is valid
                             }
                         }
-
-                        if (addAnotherIcecream == "Y")
+                        catch (Exception)
                         {
-                            Console.WriteLine("You choose to add another ice cream.\n");
-                            // Continue the loop to add another ice cream
+                            Console.WriteLine("An unexpected error occurred. Please try again.");
                         }
-                        else if (addAnotherIcecream == "N")
-                        {
-                            // Break out of the loop
-                            break;
-                        }
-
-
                     }
 
-                    // Link the new order to the customer's current order using Item property
-                    Customer customer;
-                    if (customerDict.TryGetValue(memberId, out customer))
+                    if (addAnotherIcecream == "Y")
                     {
-                        customer.CurrentOrder = newOrder;
+                        Console.WriteLine("You choose to add another ice cream.\n");
+                        // Continue the loop to add another ice cream
                     }
-
-
-                    // Determine the Pointcard tier and append the order to the appropriate queue
-                    if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
+                    else if (addAnotherIcecream == "N")
                     {
-                        goldMembersQueue.Enqueue(newOrder);
-                        Console.WriteLine("Order added to Gold Member Queue.");
+                        break; // Break out of the loop
                     }
-                    else
-                    {
-                        regularQueue.Enqueue(newOrder);
-                        Console.WriteLine("Order added to Regular Queue.");
-                    }
-
-                    // Display order details directly in CreateCustomerOrder
-                    Console.WriteLine("\nOrder Details:");
-                    Console.WriteLine($"Order ID: {newOrder.Id}");
-                    Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
-
-                    // Print ice cream details
-                    foreach (var iceCream in newOrder.IceCreamList)
-                    {
-                        Console.WriteLine($"Ice Cream: {iceCream}");
-                    }
-
-                    // Add the new order to the orderDict dictionary
-                    orderDict.Add(orderId, newOrder);
-
-                    Console.WriteLine("Order made successfully!\n");
-                    break;
                 }
-                catch (Exception ex)
+
+                // Link the new order to the customer's current order using Item property
+                Customer customer;
+                if (customerDict.TryGetValue(memberId, out customer))
                 {
-                    // Log the exception for debugging or troubleshooting
-                    Console.WriteLine("An unexpected error occurred:");
-                    Console.WriteLine(ex.Message);
+                    customer.CurrentOrder = newOrder;
                 }
+
+
+                // Determine the Pointcard tier and append the order to the appropriate queue
+                if (selectedCustomer.Rewards != null && selectedCustomer.Rewards.Tier == "Gold")
+                {
+                    goldMembersQueue.Enqueue(newOrder);
+                    Console.WriteLine("Order added to Gold Member Queue.");
+                }
+                else
+                {
+                    regularQueue.Enqueue(newOrder);
+                    Console.WriteLine("Order added to Regular Queue.");
+                }
+
+                // Display order details directly in CreateCustomerOrder
+                Console.WriteLine("\nOrder Details:");
+                Console.WriteLine($"Order ID: {newOrder.Id}");
+                Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
+
+                // Print ice cream details
+                foreach (var iceCream in newOrder.IceCreamList)
+                {
+                    Console.WriteLine($"Ice Cream: {iceCream}");
+                }
+
+                // Add the new order to the orderDict dictionary
+                orderDict.Add(orderId, newOrder);
+
+                Console.WriteLine("Order made successfully!\n");
+                break;
             }
         }
 
@@ -1400,28 +1413,32 @@ internal class Program
         // Advanced feature b - Display monthly charged amounts breakdown & total charges amounts for the year
         void displayChargedAmount(Dictionary<int, Customer> customerDict)
         {
-            try
-            {
-                while (true)
-                {
-                    // prompt user for year
-                    Console.Write("Enter the year: ");
 
-                    if (int.TryParse(Console.ReadLine(), out int inputYear))
+            while (true)
+            {
+                // prompt user for year
+                Console.Write("Enter the year (yyyy): ");
+
+                try // data validation 
+                {
+                    // Validate user input for the year, ensuring it is a 4-digit number
+                    if (int.TryParse(Console.ReadLine(), out int inputYear) && inputYear >= 1000 && inputYear <= 9999)
                     {
                         decimal[] monthlyAmounts = new decimal[12]; // Array to hold monthly amounts
-                        decimal totalAmount = 0;
+                        decimal totalAmount = 0; // Initialize a variable to hold the total amount
 
-                        foreach (var customer in customerDict.Values)
+                        foreach (var customer in customerDict.Values) // Iterate through each customer and their order history
                         {
                             foreach (var order in customer.OrderHistory)
                             {
-                                if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Year == inputYear)
+                                if (order.TimeFulfilled.HasValue && order.TimeFulfilled.Value.Year == inputYear) // Check if the order has been fulfilled in the specified year
                                 {
                                     int month = order.TimeFulfilled.Value.Month - 1; // Month index in array (0-based)
 
                                     decimal orderAmount = Convert.ToDecimal(order.CalculateTotal()); // Ensure orderAmount is decimal
 
+
+                                    // Update monthly and total amounts
                                     monthlyAmounts[month] += orderAmount;
                                     totalAmount += orderAmount;
                                 }
@@ -1437,23 +1454,26 @@ internal class Program
                             Console.WriteLine($"{monthName} {inputYear}: {monthlyAmounts[i]:C}");
                         }
 
-                        Console.WriteLine($"\nTotal {inputYear}: {totalAmount:C}");
-                        break;
+                        Console.WriteLine($"\nTotal {inputYear}: {totalAmount:C}"); // Display total amount for the year
+                        return; // Exit the method
                     }
                     else
                     {
                         throw new FormatException();
                     }
                 }
-                
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Invalid input. Please enter a valid year.");
-            }
-            catch (OverflowException)
-            {
-                Console.WriteLine("Invalid input. The entered year is too large.");
+                catch (FormatException ex)
+                {
+                    Console.WriteLine("Invalid year format. Please enter a valid 4-digit year..");
+                }
+                catch (OverflowException ex)
+                {
+                    Console.WriteLine("Entered year is too large. Please enter a smaller non-negative integer.");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                }
             }
 
         }
