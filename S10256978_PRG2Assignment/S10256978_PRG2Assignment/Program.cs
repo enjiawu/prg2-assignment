@@ -1,4 +1,4 @@
-﻿//Options
+//Options
 //==============================================================
 //Wu Enjia: 2,5,6,a(7)
 //Xue Wenya: 1,3,4,b(8)
@@ -162,7 +162,7 @@ internal class Program
                 {
                     Console.Write("Enter customer ID number: "); // Prompt user to give a customer ID number
 
-                    if (int.TryParse(Console.ReadLine(), out memberId)) // Try to parse the user input as an integer and assign it to the memberId variable.
+                    if (int.TryParse(Console.ReadLine(), out memberId) && memberId >= 100000 && memberId <= 999999) // Try to parse the user input as an integer and assign it to the memberId variable. and check it is 6 digit
                     {
                         if (customerDict.ContainsKey(memberId)) //Check the customer ID is it exists
                         {
@@ -175,16 +175,12 @@ internal class Program
                     }
                     else
                     {
-                        throw new ArgumentOutOfRangeException();
+                        throw new FormatException();
                     }
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
+                    Console.WriteLine("Invalid input. Please enter a valid 6-digit integer for the customer ID.");
                 }
                 catch (Exception ex)
                 {
@@ -198,15 +194,15 @@ internal class Program
             // Repeat the loop until a valid DOB is entered
             do
             {
-                Console.Write("Enter customer date of birth (dd/MM/yyyy): "); // prompt user to enter DOB for customer
+                Console.Write("Enter customer date of birth (MM/dd/yyyy): "); // prompt user to enter DOB for customer
                 string input = Console.ReadLine();
 
                 // Try to parse the user input as a DateTime, and store the result in the 'dob' variable.
                 isValidDate = DateTime.TryParse(input, out dob);
 
-                if (!isValidDate) // Check if the date input is not valid
+                if (!isValidDate || dob > DateTime.Today) // Check if the date input is not valid or is later than today
                 {
-                    Console.WriteLine("Invalid date format. Please enter a valid date.");
+                    Console.WriteLine("Invalid date format. Please enter a valid date not later than today.");
                 }
 
             } while (!isValidDate);
@@ -288,6 +284,16 @@ internal class Program
                         Console.WriteLine("Invalid input. Please enter a valid integer for the Member ID.");
                         Console.Write("Enter Member ID (0 to exit): ");
                     }
+                    catch (OverflowException)
+                    {
+                        Console.WriteLine("Entered value is too large. Please enter a smaller integer for the Member ID.");
+                        Console.Write("Enter Member ID (0 to exit): ");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+                        Console.Write("Enter Member ID (0 to exit): ");
+                    }
                 }
 
                 var selectedCustomer = customerDict[memberId]; // Retrieve the selected customer using the entered Member ID.
@@ -339,14 +345,22 @@ internal class Program
 
                             if (addAnotherIcecream != "Y" && addAnotherIcecream != "N") // Validate input and break if it's 'Y' or 'N'
                             {
-                                Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                                throw new InvalidOperationException();
                             }
                             else
                             {
                                 break; // Exit the loop if the input is valid
                             }
                         }
-                        catch (Exception)
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine("Invalid format. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            Console.WriteLine("Invalid input. Please enter 'Y' to add another ice cream or 'N' to finish.");
+                        }
+                        catch (Exception ex)
                         {
                             Console.WriteLine("An unexpected error occurred. Please try again.");
                         }
