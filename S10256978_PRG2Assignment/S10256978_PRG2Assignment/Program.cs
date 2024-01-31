@@ -1213,8 +1213,8 @@ internal class Program
                         $"New Order Total: ${orderTotal}");
                 }
 
-                //Checking point card status to determine if the customer can redeem points
-                if ((customer.Rewards.Tier == "Silver" || customer.Rewards.Tier == "Gold") && customer.Rewards.Points != 0)
+                //Checking point card status and number of points to determine if the customer can redeem points and checking if they're order is not free
+                if ((customer.Rewards.Tier == "Silver" || customer.Rewards.Tier == "Gold") && customer.Rewards.Points != 0 && orderTotal != 0)
                 {
                     //Prompt user asking how many points they want to use
                     while (true)
@@ -1266,6 +1266,10 @@ internal class Program
                         }
                     }
 
+                }
+                else if (orderTotal == 0)
+                {
+                    //If order is free, just skip to paying the final bill amount
                 }
                 else if (customer.Rewards.Points == 0) //Check if customer has no points
                 {
@@ -1340,8 +1344,12 @@ internal class Program
                         int flavourCount = 0; //keep track of how many flavours have been added
                         foreach (Flavour f in ic.Flavours)
                         {
-                            flavours += $"{f.Type},"; //stringing it together
-                            flavourCount++; //increment flavour count by 1
+                            for (int i = 0; f.Quantity > i; i++)
+                            {
+                                flavours += $"{f.Type},"; //stringing it together
+                                flavourCount++; //increment flavour count by 1
+                            }
+                            
                         }
                         if (flavourCount < 3) //Check if flavour count is lesser than 3, if it is then just append ','
                         {
