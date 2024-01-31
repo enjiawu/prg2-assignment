@@ -137,6 +137,7 @@ internal class Program
             {
                 Console.WriteLine(order);
             }
+
         }
 
         // Option 3 - Register new customer
@@ -225,6 +226,8 @@ internal class Program
             }
         }
 
+        Queue<int> orderIdQueue = new Queue<int>(); // Queue to store order IDs
+        
         // Option 4 - Create customer order
         void CreateCustomerOrder(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict)
         {
@@ -263,16 +266,17 @@ internal class Program
                         break;
                     }
 
-                    // Get an order ID for customer
-                    Console.Write("\nEnter order ID: ");
+                    
+                    int orderIdCounter = 1; // Initialize a counter for order IDs
                     int orderId;
 
-                    while (!int.TryParse(Console.ReadLine(), out orderId) || orderDict.ContainsKey(orderId))
+                    do
                     {
-                        // Validate the entered order ID
-                        Console.WriteLine($"Order ID [{orderId}] already exists. Please enter a different order ID.");
-                        Console.Write("Enter order ID: ");
-                    }
+                        orderId = orderIdCounter++;
+                    } while (orderIdQueue.Contains(orderId));
+
+                    orderIdQueue.Enqueue(orderId);
+
 
                     // Create a new order for the selected customer using the MakeOrder method
                     Order newOrder = customerDict[memberId].MakeOrder();
@@ -297,7 +301,7 @@ internal class Program
                         string addAnotherIcecream;
                         while (true)
                         {
-                            Console.Write("Would you like to add another ice cream to the order? (Y/N): ");
+                            Console.Write("\nWould you like to add another ice cream to the order? (Y/N): ");
                             addAnotherIcecream = Convert.ToString(Console.ReadLine().ToUpper());
                             if (addAnotherIcecream != "Y" && addAnotherIcecream != "N")
                             {
@@ -343,7 +347,7 @@ internal class Program
                     }
 
                     // Display order details directly in CreateCustomerOrder
-                    Console.WriteLine("Order Details:");
+                    Console.WriteLine("\nOrder Details:");
                     Console.WriteLine($"Order ID: {newOrder.Id}");
                     Console.WriteLine($"Time Received: {newOrder.TimeReceived}");
 
@@ -354,16 +358,7 @@ internal class Program
                     }
 
                     Console.WriteLine("Order made successfully!\n");
-
-                    Console.WriteLine(newOrder.ToString());
-                    foreach (Order order in regularQueue)
-                    {
-                        Console.WriteLine($"{order}");
-                    }
-                    foreach (Order order in goldMembersQueue)
-                    {
-                        Console.WriteLine($"{order}");
-                    }
+                    break;
                 }
                 catch (Exception ex)
                 {
@@ -373,7 +368,7 @@ internal class Program
                 }
             }
         }
-            
+
 
 
         //Option 5 - Display order details of a customers
@@ -416,6 +411,7 @@ internal class Program
                     {
                         order = new Order(id, timeReceived); //Making new order
                         orderDict[id] = order; //Add order into dictionary
+                        orderIdQueue.Enqueue(id); // Enqueue the orderId when a new order is created
                     }
 
                     if (!memberOrderDict.Keys.Contains(memberId)) //Check if member does not have any previous orders
