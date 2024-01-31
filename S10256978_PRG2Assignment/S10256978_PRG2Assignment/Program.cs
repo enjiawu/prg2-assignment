@@ -940,7 +940,7 @@ internal class Program
                         }
                         catch (ArgumentOutOfRangeException ex)
                         {
-                            Console.WriteLine("Enter a number between 1-2!");
+                            Console.WriteLine("Option out of range! Enter a number between 1-2!");
                         }
                         catch (Exception ex)
                         {
@@ -959,7 +959,7 @@ internal class Program
                         "[3] Charcoal\n" +
                         "[4] Pandan\n");
 
-                    while (true) //Data validtion to check if waffle option is valid
+                    while (true) //Data validation to check if waffle option is valid
                     {
                         try
                         {
@@ -997,7 +997,7 @@ internal class Program
                         }
                         catch (ArgumentOutOfRangeException ex)
                         {
-                            Console.WriteLine("Option must be between the range of 1-4!");
+                            Console.WriteLine("Option out of range! Option must be between the range of 1-4!");
                         }
                         catch (Exception ex)
                         {
@@ -1047,7 +1047,7 @@ internal class Program
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Please enter the number of the ice cream to be deleted!");
+                    Console.WriteLine("Incorrect format! Please enter the number of the ice cream to be deleted!");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {

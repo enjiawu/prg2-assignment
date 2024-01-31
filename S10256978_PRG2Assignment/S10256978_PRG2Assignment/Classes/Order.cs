@@ -82,7 +82,7 @@ namespace S10256978_PRG2Assignment.Classes
                 }
                 catch (FormatException ex)
                 {
-                    Console.WriteLine("Please enter one of the available options!");
+                    Console.WriteLine("Incorrect format! Please enter one of the available options!");
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
@@ -125,7 +125,7 @@ namespace S10256978_PRG2Assignment.Classes
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    Console.WriteLine("Please enter an option from 1-3.");
+                    Console.WriteLine("Option out of range! Please enter an option from 1-3.");
                 }
                 catch (Exception ex)
                 {
@@ -199,7 +199,6 @@ namespace S10256978_PRG2Assignment.Classes
 
                             if (!flavourData.ContainsKey(flavourOption)) //check if flavourdata contians flavour option
                             {
-                                Console.WriteLine("No such flavour exists!");
                                 throw new FormatException(); //throw new error if it does not
                             }
                             else
@@ -207,11 +206,16 @@ namespace S10256978_PRG2Assignment.Classes
                                 break; //break if it does
                             }
                         }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("No such flavour exists!");
+                        }
                         catch (Exception ex)
                         {
                             Console.WriteLine("Please enter an available flavour.");
                         }
                     }
+
                     if (flavourOption == "0") //Breaking out of the loop if flavourOption == 0
                     {
                         scoops = icecream.Scoops; //Changing the scoops back to the original if no flavours have been changed
@@ -460,7 +464,7 @@ namespace S10256978_PRG2Assignment.Classes
                         }
                         catch (ArgumentOutOfRangeException ex)
                         {
-                            Console.WriteLine("Enter a number between 1-2!");
+                            Console.WriteLine("Option out of range! Enter a number between 1-2!");
                         }
                         catch (Exception ex)
                         {
@@ -529,7 +533,7 @@ namespace S10256978_PRG2Assignment.Classes
                         }
                         catch (ArgumentOutOfRangeException ex)
                         {
-                            Console.WriteLine("Option must be between the range of 1-4!");
+                            Console.WriteLine("Option out of range! Option must be between the range of 1-4!");
                         }
                         catch (Exception ex)
                         {
@@ -592,3 +596,4 @@ namespace S10256978_PRG2Assignment.Classes
         }
     }
 }
+
