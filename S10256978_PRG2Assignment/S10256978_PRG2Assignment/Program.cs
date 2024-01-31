@@ -1199,7 +1199,8 @@ internal class Program
                 if (customer.IsBirthday())
                 {
                     orderTotal -= mostExIceCreamPrice; //Making the most expensive ice cream in the order cost $0.00
-                    Console.WriteLine($"It's customers [{customer.MemberId}]'s Birthday! The most expensive ice cream (${mostExIceCreamPrice}) is free!\n");
+                    Console.WriteLine($"It's customers [{customer.MemberId}]'s Birthday! The most expensive ice cream (${mostExIceCreamPrice}) is free!\n" +
+                        $"New Order Total: {orderTotal}");
                 }
 
                 //Checking if customer has completed their punch card
@@ -1208,7 +1209,8 @@ internal class Program
                 {
                     orderTotal -= firstIceCream.CalculatePrice(); //Making the first ice cream in the order $0.00
                     customer.Rewards.PunchCard = 0; //Resetting punch card back to 0
-                    Console.WriteLine($"Customer [{customer.MemberId} has obtained 10 punches in his punch card. The first ice cream is free!");
+                    Console.WriteLine($"Customer [{customer.MemberId}] has obtained 10 punches in his punch card. The first ice cream is free!\n" +
+                        $"New Order Total: ${orderTotal}");
                 }
 
                 //Checking point card status to determine if the customer can redeem points
@@ -1375,6 +1377,10 @@ internal class Program
             catch (ArgumentException ex)
             {
                 Console.WriteLine("There are no current orders in the queue now. Try again after an order has been added.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
