@@ -85,7 +85,8 @@ internal class Program
 
                 while ((s = sr.ReadLine()) != null)
                 {
-                    string[] line = s.Split(','); //Splitting all the data into necessary parts
+                    //Splitting the line and getting all the respective values
+                    string[] line = s.Split(','); 
                     string Name = line[0];
                     int MemberId = Convert.ToInt32(line[1]);
                     DateTime Dob = DateTime.ParseExact(line[2], "dd/MM/yyyy", CultureInfo.InvariantCulture);
@@ -112,6 +113,7 @@ internal class Program
             // Display the header
             Console.WriteLine($"{"Name",-15}{"MemberId",-15}{"Date of Birth",-15}{"Membership Status",-22}{"Membership Points",-22}{"PunchCard",-22}");
 
+            // Iterate through each customer in the dictionary and display their information
             foreach (Customer customer in customerDict.Values)
             {
                 Console.WriteLine($"{customer.Name,-15}{customer.MemberId,-15}{customer.Dob.ToString("dd/MM/yyyy"),-15}" +
@@ -143,18 +145,28 @@ internal class Program
         // Option 3 - Register new customer
         void RegisterNewCustomer(Dictionary<int, Customer> customerDict)
         {
-            try
-            {
-                Console.Write("Enter customer name: ");
-                string name = Convert.ToString(Console.ReadLine());
 
-                int memberId;
-                while (true)
+            Console.Write("Enter customer name (0 to cancel): "); // Prompt user for customer information - customer name
+            string name = Convert.ToString(Console.ReadLine());
+
+            // Check if the user wants to exit
+            if (name == "0")
+            {
+                Console.WriteLine("Exiting customer registration.");
+                return;
+            }
+
+            int memberId;
+            while (true)
+            {
+                try
                 {
+                    // Prompt user to give a customer ID number
                     Console.Write("Enter customer ID number: ");
+                    // Try to parse the user input as an integer and assign it to the memberId variable.
                     if (int.TryParse(Console.ReadLine(), out memberId))
                     {
-                        if (customerDict.ContainsKey(memberId))
+                        if (customerDict.ContainsKey(memberId)) //Check the customer ID is it exists
                         {
                             Console.WriteLine($"Customer ID {memberId} already exists. Please choose a different ID.");
                         }
@@ -165,57 +177,56 @@ internal class Program
                     }
                     else
                     {
-                        Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
+                        throw new ArgumentOutOfRangeException();
                     }
                 }
-
-                DateTime dob;
-                bool isValidDate = false;
-
-                do
+                catch (FormatException ex)
                 {
-                    Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
-                    string input = Console.ReadLine();
-
-                    isValidDate = DateTime.TryParse(input, out dob);
-
-                    if (!isValidDate)
-                    {
-                        Console.WriteLine("Invalid date format. Please enter a valid date.");
-                    }
-
-                } while (!isValidDate);
-
-                // Create a new customer object
-                Customer newCustomer = new Customer(name, memberId, dob);
-
-                // Create a new PointCard object
-                PointCard newPointCard = new PointCard();
-                newCustomer.Rewards = newPointCard;
-
-                // Set the initial Tier to "Ordinary"
-                newPointCard.Tier = "Ordinary";
-
-                // Add the new customer to the dictionary
-                customerDict.Add(memberId, newCustomer);
-
-                // Append the customer information to the CSV file
-                AppendCustomerToCsv(newCustomer);
-
-                Console.WriteLine("Registration successful!\n");
-                DisplayAllCustomers(customerDict);
+                    Console.WriteLine("Please enter a ");
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    Console.WriteLine("Invalid input. Please enter a valid integer for the customer ID.");
+                }
             }
-            catch (FormatException ex)
+
+            DateTime dob;
+            bool isValidDate = false;
+
+            do
             {
-                Console.WriteLine("Invalid input format. Please ensure you enter data in the correct format.");
-                Console.WriteLine(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("An unexpected error occurred:");
-                Console.WriteLine(ex.Message);
-            }
+                // prompt user to enter DOB for customer
+                Console.Write("Enter customer date of birth (dd/MM/yyyy): ");
+                string input = Console.ReadLine();
 
+                // Try to parse the user input as a DateTime, and store the result in the 'dob' variable.
+                isValidDate = DateTime.TryParse(input, out dob);
+
+                if (!isValidDate)
+                {
+                    Console.WriteLine("Invalid date format. Please enter a valid date.");
+                }
+
+            } while (!isValidDate);
+
+            // Create a new customer object
+            Customer newCustomer = new Customer(name, memberId, dob);
+
+            // Create a new PointCard object
+            PointCard newPointCard = new PointCard();
+            newCustomer.Rewards = newPointCard;
+
+            // Set the initial Tier to "Ordinary"
+            newPointCard.Tier = "Ordinary";
+
+            // Add the new customer to the dictionary
+            customerDict.Add(memberId, newCustomer);
+
+            // Append the customer information to the CSV file
+            AppendCustomerToCsv(newCustomer);
+
+            Console.WriteLine("Registration successful!\n");
+            DisplayAllCustomers(customerDict);
         }
 
         void AppendCustomerToCsv(Customer customer)
@@ -356,6 +367,9 @@ internal class Program
                     {
                         Console.WriteLine($"Ice Cream: {iceCream}");
                     }
+
+                    // Add the new order to the orderDict dictionary
+                    orderDict.Add(orderId, newOrder);
 
                     Console.WriteLine("Order made successfully!\n");
                     break;
