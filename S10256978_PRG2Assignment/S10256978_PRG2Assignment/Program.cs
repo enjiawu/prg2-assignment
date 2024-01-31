@@ -1137,7 +1137,7 @@ internal class Program
                             }
                             catch (ArgumentOutOfRangeException ex)
                             {
-                                Console.WriteLine("Error! Option must be between 1-3!");
+                                Console.WriteLine("Option out of range! Option must be between 1-3!");
                             }
                             catch (Exception ex)
                             {
@@ -1157,7 +1157,7 @@ internal class Program
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    Console.WriteLine("Please a valid MemberID!");
+                    Console.WriteLine("MemberID not found! Please a valid MemberID!");
                 }
                 catch (Exception ex)
                 {
@@ -1296,6 +1296,10 @@ internal class Program
                         {
                             Console.WriteLine($"Customer [{customer.MemberId}] does not have sufficient points! Please enter a number between 0 and {customer.Rewards.Points}.");
                         }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("An unexpected error has occurred: " + ex.Message);
+                        }
                     }
 
                 }
@@ -1420,7 +1424,7 @@ internal class Program
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("An unexpected error has occurred: " + ex.Message);
             }
         }
 
@@ -1613,6 +1617,10 @@ internal class Program
                 {
                     Console.WriteLine("No such order exists in the current queues! Please only enter an order that exists!");
                 }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("An unexpected error has occurred: " + ex.Message);
+                }
             }
 
         }
@@ -1705,7 +1713,7 @@ internal class Program
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"\n{ex.Message}\n");
+                Console.WriteLine($"\nAn unexpected error has occured: {ex.Message}\n");
             }
         }
         Console.WriteLine();
