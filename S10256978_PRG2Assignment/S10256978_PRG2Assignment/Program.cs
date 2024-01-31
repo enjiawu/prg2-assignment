@@ -237,7 +237,6 @@ internal class Program
             }
         }
 
-        Queue<int> orderIdQueue = new Queue<int>(); // Queue to store order IDs
         
         // Option 4 - Create customer order
         void CreateCustomerOrder(Dictionary<int, Customer> customerDict, Dictionary<int, Order> orderDict)
@@ -277,7 +276,14 @@ internal class Program
                         break;
                     }
 
-                    
+                    var selectedCustomer = customerDict[memberId];
+                    if (selectedCustomer.CurrentOrder != null)
+                    {
+                        Console.WriteLine("Customer already has an existing order in progress. Please choose a different customer ID.");
+                        continue; // Skip to the next iteration of the loop
+                    }
+
+
                     int orderIdCounter = 1; // Initialize a counter for order IDs
                     int orderId;
 
@@ -286,7 +292,6 @@ internal class Program
                         orderId = orderIdCounter++;
                     } while (orderDict.Keys.Contains(orderId));
 
-                    //orderIdQueue.Enqueue(orderId);
 
 
                     // Create a new order for the selected customer using the MakeOrder method
@@ -338,10 +343,11 @@ internal class Program
 
                     }
 
-                    // Link the new order to the customer's current order
-                    if (customerDict.TryGetValue(memberId, out var selectedCustomer))
+                    // Link the new order to the customer's current order using Item property
+                    Customer customer;
+                    if (customerDict.TryGetValue(memberId, out customer))
                     {
-                        selectedCustomer.CurrentOrder = newOrder;
+                        customer.CurrentOrder = newOrder;
                     }
 
 
@@ -425,7 +431,6 @@ internal class Program
                     {
                         order = new Order(id, timeReceived); //Making new order
                         orderDict[id] = order; //Add order into dictionary
-                        orderIdQueue.Enqueue(id); // Enqueue the orderId when a new order is created
                     }
 
                     if (!memberOrderDict.Keys.Contains(memberId)) //Check if member does not have any previous orders
