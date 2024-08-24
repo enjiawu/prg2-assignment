@@ -1552,6 +1552,7 @@ internal class Program
                             goldPosition++;
                         }
 
+
                         //Calculating time taken for each order
                         foreach (IceCream ic in o.IceCreamList)
                         {
